@@ -1,4 +1,4 @@
-package com.example.pictureback;
+package com.picture;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
