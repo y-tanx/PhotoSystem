@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
+<mapper namespace="com.picture.dao.AlbumMapper">    <!-- XML文件绑定的是这个接口，接口中声明的方法会在该XML文件中实现 -->
+
+    <delete id="deleteAlbum" parameterType="list">
+        delete from album where id in
+        (
+        <foreach collection="list" item="item" index="index" separator=",">
+
+            #{item}
+
+        </foreach>
+        )
+    </delete>
+    <delete id="deleteAlbumImageByAlbum" parameterType="list" >
+        delete from album_image where albumId in
+
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+
+            #{item}
+
+        </foreach>
+    </delete>
+
+</mapper>

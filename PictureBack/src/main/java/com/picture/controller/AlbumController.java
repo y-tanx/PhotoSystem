@@ -57,6 +57,20 @@ public class AlbumController {
         return jsonObject;
     }
 
+    @RequestMapping("/deleteAlbumByIds")
+    public JSONObject deleteAlbumByIds(HttpServletRequest req,String token,@RequestParam("albumIds")List<Integer> albumIds){
+        JSONObject jsonObject = new JSONObject();
+        User user = tokenUtil.jwtParser(token);
+        if(user==null){
+            jsonObject.put("status","fail");
+            return jsonObject;
+        }
+        albumService.deleteAlbum(req,albumIds,user.getUserId());
+        jsonObject.put("status","success");
+
+        return jsonObject;
+    }
+
     @RequestMapping("/share")
     public JSONObject shareAlbum(String token,Integer albumId,Integer shareDay) throws ParseException {
         JSONObject jsonObject = new JSONObject();

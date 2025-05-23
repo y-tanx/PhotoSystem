@@ -52,4 +52,15 @@ public class AlbumServiceImpl implements AlbumService {
         List<PartAlbumVO> partAlbumVO = albumMapper.selectAllAlbum(userId); // 返回所有相册基本信息(封面,名字,图片数量)
         return partAlbumVO;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteAlbum(HttpServletRequest req,List<Integer> albumIds,Integer userId) {
+        // 删除相册记录
+        albumMapper.deleteAlbum(albumIds);
+
+        // 删除与相册关联的图片
+        albumMapper.deleteAlbumImageByAlbum(albumIds);
+        recordService.addRecord(req,Operation.deleteAlbum.getName(), albumIds.size(),userId);
+    }
 }

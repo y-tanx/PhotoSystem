@@ -16,6 +16,17 @@ public interface AlbumMapper {
     @Options(useGeneratedKeys = true, keyProperty = "albumId")
     void addAlbum(Album album);
     /**
+     * 根据id删除相册
+     * @param albumIds
+     */
+    void deleteAlbum(@Param("list") List<Integer> albumIds);
+
+    /**
+     * 根据相册id删除中间表
+     * @param albumIds
+     */
+    void deleteAlbumImageByAlbum(@Param("list") List<Integer> albumIds);
+    /**
      * 查询用户相册部分信息
      * @param userId
      * @return
@@ -25,4 +36,5 @@ public interface AlbumMapper {
             @Result(property = "albumId",column = "id"),
     })
     List<PartAlbumVO> selectAllAlbum(Integer userId);
+
 }
