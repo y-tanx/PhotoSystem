@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.picture.dao.ImageMapper">
+
+<!-- addImages -->
+    <insert id="addImages" parameterType="list" useGeneratedKeys="true" keyProperty="imageId">
+        insert into image (
+            id, imageName, imageSize, imageSite, imageDesc, imageUrL, compressUrL, imageDate
+        ) values
+        <foreach collection="imageList" item="item" index="index" separator=",">
+            (
+                null,   <!-- 自增主键 -->
+                #{item.imageName},
+                #{item.imageSize},
+                #{item.imageSite},
+                #{item.imageDesc},
+                #{item.imageUrL},
+                #{item.compressUrL},
+                #{item.imageDate}
+            )
+        </foreach>
+    </insert>
+
+<!--    addImageType -->
+    <insert id="addImageType" useGeneratedKeys="true">
+        insert into image_type(id, imageId, imageType) values
+        <foreach collection="imageIds" item="id" index="index" separator=",">
+            (
+                null,
+                #{id},
+                #{imageType}
+            )
+        </foreach>
+    </insert>
+</mapper>

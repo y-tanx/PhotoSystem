@@ -78,6 +78,12 @@
             <!--版本是你springboot的版本-->
             <version>2.7.2</version>
         </dependency>
+        <!-- H2 内存数据库（测试用） -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!--Md5加密-->
         <dependency>
             <groupId>commons-codec</groupId>

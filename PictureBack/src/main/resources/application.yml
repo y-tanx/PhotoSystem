@@ -1,0 +1,22 @@
+server:
+  port: 8088
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/picture?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 040820
+  jwt:
+    signature: picture
+    ttl: 18000000
+
+mybatis:
+  type-aliases-package: com.picture.domain
+  mapper-locations: classpath:/mapper/**/*.xml
+
+file:
+  upload:
+    imgPath: D:/Project/PictureStorage/
+
+
