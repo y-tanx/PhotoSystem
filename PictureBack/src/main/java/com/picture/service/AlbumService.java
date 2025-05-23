@@ -24,4 +24,12 @@ public interface AlbumService {
      * @return 返回包含相册 ID、封面、名称等信息的列表
      */
     List<PartAlbumVO> selectAllAlbum(Integer userId);
+    /**
+     * 删除相册及其关联图片，并记录日志（带事务控制）
+     *
+     * @param req      请求对象
+     * @param albumIds 要删除的相册 ID 列表
+     * @param userId   用户 ID
+     */
+    void deleteAlbum(HttpServletRequest req,List<Integer> albumIds, Integer userId);
 }
