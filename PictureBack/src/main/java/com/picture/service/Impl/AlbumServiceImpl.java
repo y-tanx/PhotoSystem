@@ -5,6 +5,7 @@ import com.picture.domain.Album;
 //import com.picture.domain.Image;
 import com.picture.domain.Operation;
 //import com.picture.domain.VO.AlbumImageVO;
+import com.picture.domain.VO.PartAlbumVO;
 import com.picture.service.AlbumService;
 import com.picture.service.RecordService;
 import com.picture.utils.DateUtil;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -40,5 +42,14 @@ public class AlbumServiceImpl implements AlbumService {
 
         // 添加操作记录，创建相册
         recordService.addRecord(req, Operation.createAlbum.getName()+"\""+albumName+"\"", 1,userId);
+    }
+
+    @Override
+    public List<PartAlbumVO> selectAllAlbum(Integer userId) {
+        if(userId==null){
+            return null;
+        }
+        List<PartAlbumVO> partAlbumVO = albumMapper.selectAllAlbum(userId); // 返回所有相册基本信息(封面,名字,图片数量)
+        return partAlbumVO;
     }
 }
