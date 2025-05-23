@@ -29,6 +29,21 @@ public class AlbumController {
     @Resource
     RedisUtil redisUtil;
 
+    @RequestMapping("/selectAlbumName") // 定义具体接口路径
+    // 当前端发起请求访问/album/addAlbum这个地址时，就会执行该方法
+    public JSONObject selectAlbumName(String token){
+        JSONObject jsonObject = new JSONObject();
+        User user = tokenUtil.jwtParser(token);
+        if(user==null){
+            jsonObject.put("status","fail");
+            return jsonObject;
+        }
+        List<PartAlbumVO> partAlbumVOS = albumService.selectAllAlbum(user.getUserId());
+        jsonObject.put("status","success");
+        jsonObject.put("data", partAlbumVOS);
+        return jsonObject;
+    }
+
     @RequestMapping("/addAlbum")
     public JSONObject addAlbum(HttpServletRequest req,String token,String albumName){
         JSONObject jsonObject = new JSONObject();

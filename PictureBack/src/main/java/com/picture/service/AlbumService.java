@@ -17,4 +17,11 @@ public interface AlbumService {
      * @param userId     用户 ID
      */
     void addAlbum(HttpServletRequest req,String albumName, Integer userId);
+    /**
+     * 查询用户的所有相册简要信息
+     *
+     * @param userId 用户 ID
+     * @return 返回包含相册 ID、封面、名称等信息的列表
+     */
+    List<PartAlbumVO> selectAllAlbum(Integer userId);
 }
