@@ -103,4 +103,12 @@ public interface ImageMapper {
      * @param imageIds 图片Id
      */
     void deleteImage(List<Integer> imageIds);
+
+    /**
+     * 在image表中获得图片信息
+     *
+     * @param imageIds
+     * @return
+     */
+    List<Image> selectImageByIds(List<Integer> imageIds);
 }

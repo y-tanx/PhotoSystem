@@ -1,4 +1,4 @@
-package com.picture.service.Impl;
+package com.picture.service;
 
 import com.picture.domain.Image;
 import com.picture.domain.VO.ImageVO;
@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class ImageServiceImplTest {
+class ImageServiceTest {
     @Resource
-    private ImageServiceImpl imageService;
+    private ImageService imageService;
 
     private Integer userId = 1;
     private Integer albumId = 2;

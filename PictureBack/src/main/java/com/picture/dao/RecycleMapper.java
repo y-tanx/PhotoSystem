@@ -1,7 +1,9 @@
 package com.picture.dao;
 
+import com.picture.domain.Recycle;
 import com.picture.domain.VO.RecycleVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -30,4 +32,11 @@ public interface RecycleMapper {
      */
     void deleteImageFromRecycle(Integer userId, List<Integer> imageIds);
 
+    /**
+     * 查询回收站中超过30天的图片
+     *
+     * @return
+     */
+    @Select("select * from  recycle where datediff( date_format(now(),'%Y-%m-%d'),recycleDate) > 30")
+    List<Recycle> selectAllOverTime();
 }

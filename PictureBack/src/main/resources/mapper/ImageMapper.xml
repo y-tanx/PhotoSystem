@@ -129,4 +129,13 @@
             </foreach>
     </delete>
 
+    <select id="selectImageByIds" resultMap="ImageResultMap">
+        SELECT imageUrL, compressUrL
+        FROM image
+        WHERE id IN
+        <foreach collection="imageIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>

@@ -131,12 +131,10 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteImage(Integer userId, List<Integer> imageIds) {
         // 在user-image中删除图片
         userMapper.deleteUserImage(userId, imageIds);
-
-        // 在image-type中删除图片
-        imageMapper.deleteImageType(imageIds);
 
         // 在album-image中删除图片
         albumMapper.deleteAlbumImageByImgId(imageIds);
