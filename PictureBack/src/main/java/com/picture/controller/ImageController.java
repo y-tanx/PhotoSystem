@@ -155,7 +155,7 @@ public class ImageController {
         return json;
     }
 
-    @RequestMapping("selectAllByType")
+    @RequestMapping("/selectAllByType")
     public JSONObject selectAllImageByType(String token, String imageType, Integer currentPage, Integer pageSize) {
         JSONObject json = new JSONObject();
         User user = tokenUtil.jwtParser(token);
@@ -175,7 +175,7 @@ public class ImageController {
         return json;
     }
 
-    @RequestMapping("selectAllByTime")
+    @RequestMapping("/selectAllByTime")
     public JSONObject selectAllImageByTime(String token, String imageDate, Integer currentPage, Integer pageSize) throws ParseException {
         JSONObject json = new JSONObject();
         User user = tokenUtil.jwtParser(token);
@@ -194,6 +194,20 @@ public class ImageController {
             return json;
         }
         json.put("data", imageVO);
+        json.put("status", "success");
+        return json;
+    }
+
+    @RequestMapping("/delete")
+    public JSONObject deleteImage(String token, @RequestParam("imageId") List<Integer> imageIds) {
+        JSONObject json = new JSONObject();
+        User user = tokenUtil.jwtParser(token);
+        if(user == null) {
+            json.put("status", "fail");
+            return json;
+        }
+        Integer userId = user.getUserId();
+        imageService.deleteImage(userId, imageIds);
         json.put("status", "success");
         return json;
     }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.picture.dao.RecycleMapper">
+    <insert id="addImageToRecycle">
+        INSERT INTO recycle (id, userId, imageId, recycleDate)
+        VALUES
+        <foreach collection="imageIds" item="id" separator=",">
+            (NULL, #{userId}, #{id}, NOW())
+        </foreach>
+    </insert>
+
+    <resultMap id="RecycleResultMap" type="com.picture.domain.VO.RecycleVO">
+        <result property="imageId" column="id"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="RecycleResultMap" parameterType="Integer">
+        SELECT
+            image.id,
+            imageName,
+            compressUrL,
+            (30 - DATEDIFF(NOW(), recycleDate)) AS day
+        FROM image
+            JOIN recycle ON image.id = recycle.imageId
+        WHERE userId = #{userId}
+        ORDER BY day DESC
+    </select>
+    
+    <delete id="deleteImageFromRecycle">
+        DELETE FROM recycle
+        WHERE userId = #{userId} AND imageId IN
+        <foreach collection="imageIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

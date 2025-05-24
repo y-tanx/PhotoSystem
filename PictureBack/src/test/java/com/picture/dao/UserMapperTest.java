@@ -24,4 +24,12 @@ class UserMapperTest {
         List<Integer> imageIds = Arrays.asList(1001, 1002, 1003);
         userMapper.addUserImage(userId, imageIds);
     }
+
+    @Test
+    void deleteUserImage() {
+        Integer userId = 1;
+        List<Integer> imageIds = Arrays.asList(1001, 1002, 1003);
+        userMapper.addUserImage(userId, imageIds);
+        userMapper.deleteUserImage(userId, Arrays.asList(1001, 1002));
+    }
 }

@@ -120,4 +120,33 @@ class ImageServiceImplTest {
         assertNotNull(imageVO2);
         System.out.println(imageVO2);
     }
+
+    @Test
+    void deleteImage() {
+        // 添加图片
+        List<Image> imageList = new ArrayList<>();
+
+        Image image1 = new Image();
+        image1.setImageName("image1");
+        image1.setImageUrL("/server/img/origin/image1.jpg");
+        image1.setCompressUrL("/server/img/compress/image1.jpg");
+        image1.setImageSite("中国，哈尔滨");
+        image1.setImageDesc("这是一段注释!");
+        image1.setImageDate(new Date());
+
+        Image image2 = new Image();
+        image2.setImageName("image2");
+        image2.setImageUrL("/server/img/origin/image2.jpg");
+        image2.setCompressUrL("/server/img/compress/image2.jpg");
+        image2.setImageSite("中国，北京");
+        image2.setImageDesc("这是image2的注释!");
+        image2.setImageDate(new Date());
+
+        imageList.add(image1);
+        imageList.add(image2);
+        imageService.uploadImage(imageList, userId, albumId, albumName, imageType);
+
+        // 删除图片
+        imageService.deleteImage(userId, Arrays.asList(image1.getImageId()));
+    }
 }

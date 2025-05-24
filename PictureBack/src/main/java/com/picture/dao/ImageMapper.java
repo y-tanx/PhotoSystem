@@ -89,4 +89,18 @@ public interface ImageMapper {
      * @return
      */
     Integer selectImageCountByTime(Integer userId, Date imageDate);
+
+    /**
+     * 从image-type表中删除记录
+     *
+     * @param imageIds 要删除的图片Id
+     */
+    void deleteImageType(List<Integer> imageIds);
+
+    /**
+     * 在image表中彻底删除图片
+     *
+     * @param imageIds 图片Id
+     */
+    void deleteImage(List<Integer> imageIds);
 }

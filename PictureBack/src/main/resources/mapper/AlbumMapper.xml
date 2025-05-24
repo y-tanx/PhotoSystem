@@ -36,5 +36,13 @@
             )
         </foreach>
     </insert>
+
+    <delete id="deleteAlbumImageByImgId" parameterType="map">
+        DELETE FROM album_image
+        WHERE imageId IN
+            <foreach collection="imageIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </delete>
     
 </mapper>

@@ -13,4 +13,14 @@ public interface UserMapper {
      * @param imageIds 图片的Id列表
      */
     void addUserImage(Integer userId, List<Integer> imageIds);
+
+    /**
+     * 从user-image表中删除用户的一组图片
+     *
+     * @param userId 用户Id
+     * @param imageIds 要删除的图片的Id
+     */
+    void deleteUserImage(Integer userId, List<Integer> imageIds);
+
+
 }

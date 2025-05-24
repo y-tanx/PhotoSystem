@@ -3,6 +3,7 @@ package com.picture.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.picture.dao.AlbumMapper;
 import com.picture.dao.ImageMapper;
+import com.picture.dao.RecycleMapper;
 import com.picture.dao.UserMapper;
 import com.picture.domain.Image;
 import com.picture.domain.VO.AllTimeTypeVO;
@@ -25,6 +26,8 @@ public class ImageServiceImpl implements ImageService {
     private AlbumMapper albumMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private RecycleMapper recycleMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)   // 事务控制
@@ -125,5 +128,20 @@ public class ImageServiceImpl implements ImageService {
         Integer count = imageMapper.selectImageCountByTime(userId, imageDate);
         ImageVO imageVO = new ImageVO(images, imageUrLs, count);
         return imageVO;
+    }
+
+    @Override
+    public void deleteImage(Integer userId, List<Integer> imageIds) {
+        // 在user-image中删除图片
+        userMapper.deleteUserImage(userId, imageIds);
+
+        // 在image-type中删除图片
+        imageMapper.deleteImageType(imageIds);
+
+        // 在album-image中删除图片
+        albumMapper.deleteAlbumImageByImgId(imageIds);
+
+        // 将图片加入到recycle中
+        recycleMapper.addImageToRecycle(userId, imageIds);
     }
 }

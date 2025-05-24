@@ -62,5 +62,11 @@ public interface ImageService {
      */
     ImageVO selectImageByTime(Integer userId, Date imageDate, Integer currentPage, Integer pageSize);
 
-
+    /**
+     * 从相册中删除图片，将它加入到回收站中
+     *
+     * @param userId 用户Id
+     * @param imageIds 要删除的图片Id
+     */
+    void deleteImage(Integer userId, List<Integer> imageIds);
 }

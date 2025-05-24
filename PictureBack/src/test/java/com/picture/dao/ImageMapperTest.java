@@ -163,6 +163,38 @@ class ImageMapperTest {
     }
 
     @Test
-    void selectImageCountByTime() {
+    void deleteImageType() {
+        Image img1 = new Image(null, "pic1.jpg", 2048L, "地点1", "描述1",
+                "http://url1.com", "http://url1-small.com", new Date());
+
+        Image img2 = new Image(null, "pic2.jpg", 4096L, "地点2", "描述2",
+                "http://url2.com", "http://url2-small.com", new Date());
+
+        List<Image> imageList = Arrays.asList(img1, img2);
+        imageMapper.addImages(imageList);
+        List<Integer> imageIds = Arrays.asList(img1.getImageId(), img2.getImageId());
+        userMapper.addUserImage(1, imageIds);
+        imageMapper.addImageType(imageIds, "风景");
+
+        // 删除img1
+        imageMapper.deleteImageType(Arrays.asList(img1.getImageId()));
+    }
+
+    @Test
+    void deleteImage() {
+        Image img1 = new Image(null, "pic1.jpg", 2048L, "地点1", "描述1",
+                "http://url1.com", "http://url1-small.com", new Date());
+
+        Image img2 = new Image(null, "pic2.jpg", 4096L, "地点2", "描述2",
+                "http://url2.com", "http://url2-small.com", new Date());
+
+        List<Image> imageList = Arrays.asList(img1, img2);
+        imageMapper.addImages(imageList);
+        List<Integer> imageIds = Arrays.asList(img1.getImageId(), img2.getImageId());
+        userMapper.addUserImage(1, imageIds);
+        imageMapper.addImageType(imageIds, "风景");
+
+        // 删除img1
+        imageMapper.deleteImage(Arrays.asList(img1.getImageId()));
     }
 }
