@@ -1,15 +1,20 @@
 package com.picture.service.Impl;
 
+import com.github.pagehelper.PageHelper;
 import com.picture.dao.AlbumMapper;
 import com.picture.dao.ImageMapper;
 import com.picture.dao.UserMapper;
 import com.picture.domain.Image;
+import com.picture.domain.VO.AllTimeTypeVO;
+import com.picture.domain.VO.ImageVO;
 import com.picture.service.ImageService;
+import org.apache.tomcat.Jar;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -47,5 +52,78 @@ public class ImageServiceImpl implements ImageService {
         albumMapper.addAlbumImage(albumId, imageIds);
 
         return true;
+    }
+
+    @Override
+    public AllTimeTypeVO selectTimeType(Integer userId) {
+        // 查询用户图片的所有日期
+        List<Date> dates = imageMapper.selectAllImageTime(userId);
+
+        // 查询用户图片的所有类型
+        List<String> types = imageMapper.selectAllImageType(userId);
+
+        // 封装类型和日期信息
+        AllTimeTypeVO allTimeTypeVO = new AllTimeTypeVO(types, dates);
+        return allTimeTypeVO;
+    }
+
+    @Override
+    public ImageVO selectAllImage(Integer userId, Integer currentPage, Integer pageSize) {
+        if (userId == null || currentPage == null || pageSize == null) {
+            return null;
+        }
+
+        PageHelper.startPage(currentPage, pageSize);    // 启用分页
+        List<Image> imageList = imageMapper.selectAllImage(userId);
+
+        // 获得图片的URL
+        List<String> imageUrLs = new ArrayList<>();
+        for (Image image : imageList) {
+            imageUrLs.add(image.getImageUrL());
+        }
+        Integer count = imageMapper.selectImageCount(userId);
+
+        // 封装用户的所有图片对象，图片的URL和图片总数
+        ImageVO imageVO = new ImageVO(imageList, imageUrLs, count);
+        return imageVO;
+    }
+
+    @Override
+    public ImageVO selectImageByType(Integer userId, String imageType, Integer currentPage, Integer pageSize) {
+        if (userId == null || currentPage == null || pageSize == null) {
+            return null;
+        }
+        PageHelper.startPage(currentPage, pageSize);
+
+        // 按类别查询图片
+        List<Image> images = imageMapper.selectImageByType(userId, imageType);
+        List<String> imageUrLs = new ArrayList<>();
+
+        // 获得图片的URL
+        for (Image image : images) {
+            imageUrLs.add(image.getImageUrL());
+        }
+
+        // 图片的数量
+        Integer count = imageMapper.selectImageCountByType(userId, imageType);
+        ImageVO imageVO = new ImageVO(images, imageUrLs, count);
+        return imageVO;
+    }
+
+    @Override
+    public ImageVO selectImageByTime(Integer userId, Date imageDate, Integer currentPage, Integer pageSize) {
+        if (userId == null || currentPage == null || pageSize == null) {
+            return null;
+        }
+        PageHelper.startPage(currentPage, pageSize);
+        List<Image> images = imageMapper.selectImageByTime(userId, imageDate);
+        List<String> imageUrLs = new ArrayList<>();
+        for (Image image : images) {
+            imageUrLs.add(image.getImageUrL());
+        }
+
+        Integer count = imageMapper.selectImageCountByTime(userId, imageDate);
+        ImageVO imageVO = new ImageVO(images, imageUrLs, count);
+        return imageVO;
     }
 }

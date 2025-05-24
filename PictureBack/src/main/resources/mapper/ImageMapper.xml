@@ -33,4 +33,85 @@
             )
         </foreach>
     </insert>
+    
+    <select id="selectAllImageTime" resultType="Date" parameterType="Integer">
+        SELECT DISTINCT imageDate
+        FROM image
+        WHERE id IN (
+            SELECT imageId
+            FROM user_image
+            WHERE userId = #{userId}
+        )
+        AND imageDate IS NOT NULL
+        ORDER BY imageDate DESC
+    </select>
+
+    <select id="selectAllImageType" resultType="String" parameterType="Integer">
+        SELECT DISTINCT imageType
+        FROM image_type
+        WHERE imageId IN (
+            SELECT imageId
+            FROM user_image
+            WHERE userId = #{userId}
+        )
+        AND imageType IS NOT NULL
+        ORDER BY CONVERT(imageType USING gbk) ASC
+    </select>
+
+    <resultMap id="ImageResultMap" type="com.picture.domain.Image">
+        <result property="imageId" column="id"/>
+    </resultMap>
+
+    <select id="selectAllImage" resultMap="ImageResultMap" parameterType="Integer">
+        SELECT *
+        FROM image
+        WHERE id IN (
+            SELECT imageId
+            FROM user_image
+            WHERE userId=#{userId}
+            )
+    </select>
+
+    <select id="selectImageCount" resultType="Integer" parameterType="Integer">
+        SELECT COUNT(*)
+        FROM image
+        WHERE id In (
+            SELECT imageId
+            FROM user_image
+            WHERE userId=#{userId}
+            )
+    </select>
+
+    <select id="selectImageByType" resultMap="ImageResultMap" parameterType="map">
+        SELECT DISTINCT i.*
+        FROM image i
+        JOIN user_image ui ON i.id = ui.imageId
+        JOIN image_type it ON i.id = it.imageId
+        WHERE ui.userId = #{userId} AND it.imageType = #{imageType}
+    </select>
+
+    <select id="selectImageCountByType" resultType="Integer" parameterType="map">
+        SELECT COUNT(*)
+        FROM image i
+                 JOIN user_image ui ON i.id = ui.imageId
+                 JOIN image_type it ON i.id = it.imageId
+        WHERE ui.userId = #{userId} AND it.imageType = #{imageType}
+
+    </select>
+
+    <select id="selectImageByTime" resultMap="ImageResultMap" parameterType="map">
+        SELECT DISTINCT i.*
+        FROM image i
+            JOIN user_image ui ON i.id = ui.imageId
+        WHERE ui.userId = #{userId} AND i.imageDate = #{imageDate}
+    </select>
+
+    <select id="selectImageCountByTime" resultType="Integer" parameterType="map">
+        SELECT COUNT(*)
+        FROM image i
+            JOIN user_image ui ON i.id = ui.imageId
+        WHERE ui.userId = #{userId} AND i.imageDate = #{imageDate}
+    </select>
+
+
 </mapper>

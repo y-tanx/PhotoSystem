@@ -19,4 +19,9 @@ file:
   upload:
     imgPath: D:/Project/PictureStorage/
 
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
 
