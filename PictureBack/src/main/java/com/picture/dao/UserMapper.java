@@ -1,6 +1,8 @@
 package com.picture.dao;
 
+import com.picture.domain.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -22,5 +24,11 @@ public interface UserMapper {
      */
     void deleteUserImage(Integer userId, List<Integer> imageIds);
 
-
+    /**
+     *用户id查询,用于账号登录
+     * @param user
+     * @return
+     */
+    @Select("select id from user where (email=#{userName} or userName = #{userName})and passWord = #{passWord}")
+    Integer selectUserId(User user);
 }

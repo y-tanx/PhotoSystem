@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.picture.dao.AlbumMapper">
     <insert id="addAlbum" useGeneratedKeys="true" keyProperty="albumId">
         insert into album
@@ -14,25 +14,25 @@
             albumMusic,
             userId
         ) values
-        (
-            null,
-            #{albumName},
-            #{albumTheme},
-            #{albumContext},
-            #{albumImg},
-            #{backgroundImage},
-            #{albumMusic},
-            #{userId}
-        )
+            (
+                null,
+                #{albumName},
+                #{albumTheme},
+                #{albumContext},
+                #{albumImg},
+                #{backgroundImage},
+                #{albumMusic},
+                #{userId}
+            )
     </insert>
 
     <insert id="addAlbumImage" useGeneratedKeys="true">
         insert into album_image(id , albumId, imageId) values
         <foreach collection="imageIds" item="id" index="index" separator=",">
             (
-                null,
-                #{albumId},
-                #{id}
+            null,
+            #{albumId},
+            #{id}
             )
         </foreach>
     </insert>
@@ -40,9 +40,29 @@
     <delete id="deleteAlbumImageByImgId" parameterType="map">
         DELETE FROM album_image
         WHERE imageId IN
-            <foreach collection="imageIds" item="id" open="(" separator="," close=")">
-                #{id}
-            </foreach>
+        <foreach collection="imageIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </delete>
-    
+
+    <delete id="deleteAlbum" parameterType="list">
+        delete from album where id in
+        (
+        <foreach collection="list" item="item" index="index" separator=",">
+
+            #{item}
+
+        </foreach>
+        )
+    </delete>
+
+    <delete id="deleteAlbumImageByAlbum" parameterType="list" >
+        delete from album_image where albumId in
+
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+
+            #{item}
+
+        </foreach>
+    </delete>
 </mapper>
