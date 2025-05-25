@@ -1,10 +1,8 @@
 package com.picture.utils;
 
 /**
- * @program: MemoryBack
  * @description: redis操作工具
  * @author: picture
- * @create: 2022-09-02 23:32
  **/
 
 

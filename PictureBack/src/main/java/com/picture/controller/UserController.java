@@ -1,11 +1,13 @@
 package com.picture.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.picture.common.ResultMessage;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.picture.domain.User;
 import com.picture.service.UserService;
 import com.picture.utils.RedisUtil;
 import com.picture.utils.TokenUtil;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -40,4 +42,35 @@ public class UserController {
             return ResultMessage.success(200,"登录成功!",token);
         }
     }
+
+    @RequestMapping("/resetPassword")
+    public JSONObject resetPassword(@RequestParam("username") String userName, String password, String email, String codeNumber){
+        JSONObject jsonObject = new JSONObject();
+        // 检验验证码
+        String redisCode = redisUtil.get(email);
+        if(!codeNumber.equals(redisCode)){
+            jsonObject.put("status","codeError");
+            return jsonObject;
+        }
+
+        // 用户不存在
+        if(userService.selectUserName(userName) == null){
+            jsonObject.put("status","notExist");
+            return jsonObject;
+        }
+
+        // 调用Service层，修改密码
+        User user = new User();
+        user.setUserName(userName);
+        user.setPassWord(password);
+        boolean status = userService.resetPassword(user);
+        if(status){
+            jsonObject.put("status","success");
+        }else {
+            jsonObject.put("status","fail");
+        }
+        return jsonObject;
+    }
+
+
 }

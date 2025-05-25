@@ -10,4 +10,21 @@ public interface UserService {
      * @return
      */
     Integer selectUserId(User user);
+
+    /**
+     * 查询用户名是否存在
+     *
+     * @param UserName 用户名
+     * @return
+     */
+    String selectUserName(String UserName);
+
+    /**
+     * 重置用户密码
+     *
+     * @param user 用户信息
+     * @return 是否修改成功
+     */
+    boolean resetPassword(User user);
+
 }

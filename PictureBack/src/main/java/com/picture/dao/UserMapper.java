@@ -3,6 +3,7 @@ package com.picture.dao;
 import com.picture.domain.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -31,4 +32,20 @@ public interface UserMapper {
      */
     @Select("select id from user where (email=#{userName} or userName = #{userName})and passWord = #{passWord}")
     Integer selectUserId(User user);
+
+    /**
+     * 用户账号查询，防止重复注册
+     * @param UserName
+     * @return
+     */
+    @Select("select userName from user where userName = #{userName}")
+    String selectUserName(String UserName);
+
+    /**
+     * 根据userName更改用户的密码
+     *
+     * @param userName
+     */
+    @Update("update user set password = #{password} where userName = #{userName}")
+    void resetPasswordByUserName(String userName, String password);
 }

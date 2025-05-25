@@ -23,4 +23,27 @@ public class UserServiceImpl implements UserService {
         return userId;
     }
 
+    @Override
+    public boolean resetPassword(User user) {
+        if(user == null) {
+            return false;
+        }
+
+        String userName = user.getUserName();
+        if(userName == null || "".equals(userName)) {
+            return false;
+        }
+
+        String password = user.getPassWord();
+
+        // 修改用户名
+        userMapper.resetPasswordByUserName(userName, password);
+        return true;
+    }
+
+    @Override
+    public String selectUserName(String UserName) {
+
+        return userMapper.selectUserName(UserName); // 查询用户名是否存在，避免出现重复注册
+    }
 }
