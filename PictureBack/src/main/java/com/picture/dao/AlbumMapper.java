@@ -28,13 +28,6 @@ public interface AlbumMapper {
      * @param imageIds 要上传的图片Id
      */
     void addAlbumImage(int albumId, List<Integer> imageIds);
-
-    /**
-     * 根据id删除相册
-     * @param albumIds
-     */
-    void deleteAlbum(@Param("list") List<Integer> albumIds);
-
     /**
      * 从album-image表中删除相册的一组图片
      *
@@ -47,6 +40,17 @@ public interface AlbumMapper {
      * @param albumIds
      */
     void deleteAlbumImageByAlbum(@Param("list") List<Integer> albumIds);
+    /**
+     * 移除相册图片中间表
+     * @param imageIds
+     */
+    void removeAlbumImage(int albumId,@Param("list") List<Integer> imageIds);
+
+    /**
+     * 根据id删除相册
+     * @param albumIds
+     */
+    void deleteAlbum(@Param("list") List<Integer> albumIds);
 
     /**
      * 查询用户相册部分信息

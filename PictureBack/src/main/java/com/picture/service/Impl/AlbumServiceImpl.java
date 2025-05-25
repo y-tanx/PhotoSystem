@@ -70,6 +70,19 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
+    public void removeImageToAlbum(HttpServletRequest req,Integer albumId, List<Integer> imageId,Integer userId) {
+        System.out.println(albumId);
+        System.out.println(imageId);
+
+        // 删除相册中指定的照片
+        albumMapper.removeAlbumImage(albumId,imageId);
+
+        // 获取相册名称，用于日志记录
+        String albumName = albumMapper.selectAlbum(albumId);
+        recordService.addRecord(req, "\""+albumName+"\""+Operation.deleteAlbumImage.getName(), imageId.size(),userId);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteAlbum(HttpServletRequest req,List<Integer> albumIds,Integer userId) {
         // 删除相册记录
