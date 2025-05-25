@@ -83,6 +83,21 @@ public class AlbumController {
 
         return jsonObject;
     }
+    @RequestMapping("/selectAllImage")
+    public JSONObject selectAllImage(HttpServletRequest req,String token,Integer albumId) throws ParseException {
+        JSONObject jsonObject = new JSONObject();
+        User user = tokenUtil.jwtParser(token);
+        if(user==null){
+            jsonObject.put("status","fail");
+            return jsonObject;
+        }
+        JSONObject res = albumService.selectAlbumImage(albumId);
+
+        jsonObject.put("status","success");
+        jsonObject.put("data",res);
+
+        return jsonObject;
+    }
 
     @RequestMapping("/share")
     public JSONObject shareAlbum(String token,Integer albumId,Integer shareDay) throws ParseException {

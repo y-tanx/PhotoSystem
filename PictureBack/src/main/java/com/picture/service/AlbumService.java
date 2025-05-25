@@ -41,4 +41,12 @@ public interface AlbumService {
      * @param userId   用户 ID
      */
     void deleteAlbum(HttpServletRequest req,List<Integer> albumIds, Integer userId);
+    /**
+     * 查询某个相册中所有图片，按日期分组，并生成预览 URL 列表
+     *
+     * @param albumId 相册 ID
+     * @return 返回一个 JSONObject，包含按时间分组的图片列表和预览图 URL 列表
+     * @throws ParseException 日期转换异常
+     */
+    JSONObject selectAlbumImage(Integer albumId) throws ParseException;
 }
