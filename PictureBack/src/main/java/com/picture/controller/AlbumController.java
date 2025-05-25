@@ -57,6 +57,19 @@ public class AlbumController {
         return jsonObject;
     }
 
+    @RequestMapping("/removeImageFromAlbum")
+    public JSONObject removeImageFromAlbum(HttpServletRequest req, String token, @RequestParam("imageId") List<Integer> imageId, Integer albumId ){
+        JSONObject jsonObject = new JSONObject();
+        User user = tokenUtil.jwtParser(token);
+        if(user==null){
+            jsonObject.put("status","fail");
+            return jsonObject;
+        }
+        albumService.removeImageToAlbum(req,albumId,imageId,user.getUserId());
+        jsonObject.put("status","success");
+        return jsonObject;
+    }
+
     @RequestMapping("/addAlbum")
     public JSONObject addAlbum(HttpServletRequest req,String token,String albumName){
         JSONObject jsonObject = new JSONObject();
