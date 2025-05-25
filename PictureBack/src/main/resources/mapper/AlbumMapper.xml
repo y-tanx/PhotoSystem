@@ -37,6 +37,14 @@
         </foreach>
     </insert>
 
+    <delete id="removeAlbumImage"  parameterType="list" >
+        delete from album_image where albumId=#{albumId} and imageId in
+        ( <foreach collection="list" item="item" index="index" separator=",">
+        #{item}
+    </foreach>
+        )
+    </delete>
+
     <delete id="deleteAlbumImageByImgId" parameterType="map">
         DELETE FROM album_image
         WHERE imageId IN
@@ -65,4 +73,13 @@
 
         </foreach>
     </delete>
+    <resultMap id="AlbumImageResultMap" type="com.picture.domain.VO.AlbumImageVO">
+        <result column="imageDate" property="time" jdbcType="VARCHAR"/>
+        <collection property="images" resultMap="ImageResultMap"/>
+    </resultMap>
+    <resultMap id="ImageResultMap" type="com.picture.domain.Image">
+        <id column="any_value(id)" property="imageId" jdbcType="INTEGER"/>
+        <result column="any_value(compressUrL)" property="compressUrL" jdbcType="VARCHAR"/>
+        <result column="any_value(imageName)" property="imageName" jdbcType="VARCHAR"/>
+    </resultMap>
 </mapper>
