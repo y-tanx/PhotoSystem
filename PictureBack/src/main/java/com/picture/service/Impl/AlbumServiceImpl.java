@@ -94,6 +94,11 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
+    public void setAlbumCover( Integer albumId, Integer imageId) {
+        albumMapper.uploadAlbum(albumId,imageId);   // 设置相册的封面图片
+    }
+
+    @Override
     public JSONObject selectAlbumImage(Integer albumId) throws ParseException {
         List<Image> images = albumMapper.selectAlbumImage(albumId); // 相册中所有的图片
         List<Date> dates = albumMapper.selectAlbumImageTime(albumId);   // 图片的所有日期
