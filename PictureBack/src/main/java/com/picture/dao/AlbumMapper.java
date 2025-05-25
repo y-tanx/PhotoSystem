@@ -13,6 +13,12 @@ public interface AlbumMapper {
      * @param album
      */
     void addAlbum(Album album);
+
+    @Update("update album set albumImg = (select compressUrL from image where image.id=#{imageId}) where album.id =#{albumId} ")
+    void uploadAlbum(Integer albumId,Integer imageId);
+
+    @Select("select albumName from album where id=#{albumId}")
+    String selectAlbum(Integer albumId);
     /**
      * 将相册Id-图片Id 添加到album-image表中
      *

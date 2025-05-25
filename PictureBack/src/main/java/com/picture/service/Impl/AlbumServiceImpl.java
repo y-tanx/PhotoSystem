@@ -54,6 +54,17 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
+    public void addImageToAlbum(HttpServletRequest req,Integer albumId, List<Integer> imageId,Integer userId) {
+        // 将图片上传到相册中
+        albumMapper.addAlbumImage(albumId,imageId);
+
+        // 获取相册名称，用于日志记录
+        String albumName = albumMapper.selectAlbum(albumId);
+
+        recordService.addRecord(req, Operation.addImageToAlbum.getName()+"\""+albumName+"\"", imageId.size(),userId);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteAlbum(HttpServletRequest req,List<Integer> albumIds,Integer userId) {
         // 删除相册记录
