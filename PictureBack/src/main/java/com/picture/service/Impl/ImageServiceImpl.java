@@ -41,7 +41,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     @Transactional(rollbackFor = Exception.class)   // 事务控制
     public boolean uploadImage(List<Image> imageList, Integer userId, Integer albumId, String albumName, String imageType) {
-        if(imageList == null || imageList.size() == 0 || userId == null || albumId == null || albumName == null || imageType == null) {
+        if(imageList == null || imageList.size() == 0 || userId == null || albumId == null || albumName == null || albumName.equals("") || imageType == null) {
             return false;
         }
 
@@ -61,6 +61,17 @@ public class ImageServiceImpl implements ImageService {
         userMapper.addUserImage(userId, imageIds);
 
         // 4. 插入到album-image表
+        if(albumId == 0) {
+            // 新建相册
+            Album album = new Album();
+            album.setAlbumId(albumId);
+            album.setAlbumName(albumName);
+            album.setAlbumImg(imageList.get(0).getCompressUrL());
+            album.setUserId(userId);
+            albumMapper.addAlbum(album);
+            // 获得相册Id
+            albumId = album.getAlbumId();
+        }
         albumMapper.addAlbumImage(albumId, imageIds);
 
         return true;
@@ -105,7 +116,18 @@ public class ImageServiceImpl implements ImageService {
         }
         userMapper.addUserImage(userId, imageIds);
 
-        // 4. 插入到album-image表中
+        // 4. 插入到album-image表
+        if(albumId == 0) {
+            // 新建相册
+            Album album = new Album();
+            album.setAlbumId(albumId);
+            album.setAlbumName(albumName);
+            album.setAlbumImg(imageList.get(0).getCompressUrL());
+            album.setUserId(userId);
+            albumMapper.addAlbum(album);
+            // 获得相册Id
+            albumId = album.getAlbumId();
+        }
         albumMapper.addAlbumImage(albumId, imageIds);
 
         return jsonArray;
