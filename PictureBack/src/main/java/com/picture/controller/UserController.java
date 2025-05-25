@@ -7,7 +7,6 @@ import com.picture.service.UserService;
 import com.picture.utils.RedisUtil;
 import com.picture.utils.TokenUtil;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 import javax.annotation.Resource;

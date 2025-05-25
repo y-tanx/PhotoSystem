@@ -1,5 +1,6 @@
 package com.picture.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.picture.domain.Image;
 import com.picture.domain.User;
@@ -110,6 +111,70 @@ public class ImageController {
             json.put("status", "fail");
         }
 
+        return json;
+    }
+
+    @RequestMapping("/uploadAI")
+    public JSONObject uploadAI(String token, String albumName, Integer albumId, String imgSite, String imgDesc, Integer resNumber, @RequestParam("file")MultipartFile[] multipartFiles ) throws Exception {
+        JSONObject json = new JSONObject();
+        User user = tokenUtil.jwtParser(token);
+        if(user == null) {
+            json.put("status", "fail");
+            return json;
+        }
+
+        // 提取用户名和用户Id
+        Integer userId = user.getUserId();
+        String userName = user.getUserName();
+
+        // 设置图片的拍摄地点 和 注释
+        imgSite = imgSite == null ? "其它" : imgSite;
+        imgDesc = imgDesc == null ? "请输入文本" : imgDesc;
+
+        // 将所有要上传的图片信息存入集合
+        List<Image> imageList = new ArrayList<>();
+        for (MultipartFile file : multipartFiles) {
+            // 获取图片的名称和字节数
+            String imageName = file.getOriginalFilename();
+            long imageSize = file.getSize();
+
+            // 将图片文件保存到userName目录下，返回图片文件在Web上的路径
+            String imageUrL = fileServerUtil.uploadServe("img", userName, file);
+            String imagePath = fileServerUtil.ServPathToAP(imageUrL);   // 这是本地存储路径
+
+            // 提取图片的拍摄时间/最后修改时间
+            Date imageDate = exifUtil.getImageDate(new File(imagePath));    // 根据图片路径，获得图片的拍摄时间/最后修改时间
+            if(imageDate == null)
+            {
+                imageDate = new Date();
+            }
+
+            // 压缩图片，返回压缩后图片的路径
+            String compressUrL = fileServerUtil.CompressImage(imagePath, imageName, (float) imageSize);
+
+            // 创建Image对象，并加入到列表中
+            imageList.add(new Image(null, imageName, imageSize, imgSite, imgDesc, imageUrL, compressUrL, imageDate));
+        }
+
+        // 设置标签数量
+        int labelCount = resNumber == null ? 1 : resNumber;
+
+        // 使用AI功能打标
+        JSONArray data = imageService.uploadImageWithAI(imageList, userId, albumId, albumName, labelCount);
+
+        // 上传失败，清除之前的文件
+        if(data == null || data.size() == 0) {
+            for(Image image : imageList) {
+                String imageUrL = image.getImageUrL();
+                fileServerUtil.deleteServe(imageUrL);
+            }
+            json.put("status", "fail");
+            return json;
+        }
+
+        // 上传成功，将标签和置信度作为data传递给前端
+        json.put("status", "success");
+        json.put("data", data);
         return json;
     }
 

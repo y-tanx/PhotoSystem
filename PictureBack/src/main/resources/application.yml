@@ -25,3 +25,7 @@ pagehelper:
   support-methods-arguments: true
   params: count=countSql
 
+aliyun:
+  accessKeyId: LTAI5tKHDnSJYMyiyMqemu5t
+  accessKeySecret: Tf6AYAP2u2aifJNR8Sl6mkPnZGoNUk
+

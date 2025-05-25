@@ -1,15 +1,22 @@
 package com.picture.service.Impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.picture.dao.AlbumMapper;
 import com.picture.dao.ImageMapper;
 import com.picture.dao.RecycleMapper;
 import com.picture.dao.UserMapper;
+import com.picture.domain.Album;
 import com.picture.domain.Image;
+import com.picture.domain.VO.AIResultVO;
 import com.picture.domain.VO.AllTimeTypeVO;
 import com.picture.domain.VO.ImageVO;
 import com.picture.service.ImageService;
+import com.picture.utils.FileServerUtil;
 import org.apache.tomcat.Jar;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +35,8 @@ public class ImageServiceImpl implements ImageService {
     private UserMapper userMapper;
     @Resource
     private RecycleMapper recycleMapper;
+    @Autowired
+    private FileServerUtil fileServerUtil;
 
     @Override
     @Transactional(rollbackFor = Exception.class)   // 事务控制
@@ -55,6 +64,72 @@ public class ImageServiceImpl implements ImageService {
         albumMapper.addAlbumImage(albumId, imageIds);
 
         return true;
+    }
+
+    @Override
+    public JSONArray uploadImageWithAI(List<Image> imageList, Integer userId, Integer albumId, String albumName, int labelCount) throws Exception {
+        if(imageList == null || imageList.size() == 0 || userId == null || albumId == null || albumName == null || albumName.equals("") || labelCount <= 0) {
+            return null;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+
+        // 1. 插入image表
+        imageMapper.addImages(imageList);
+
+        // 2. 使用阿里云对图像打标，标签作为类别插入到image-type表中
+        int imageNum = 0;   // 图片序号
+        for (Image image : imageList) {
+            // 调用AI接口，获取标签结果
+            List<AIResultVO> allResults = fileServerUtil.imageLabel(fileServerUtil.ServPathToAP(image.getCompressUrL()));
+            if(allResults == null || allResults.size() == 0) {
+                continue;
+            }
+
+            // 截取前labelCount条结果
+            List<AIResultVO> topResults = allResults.subList(0, Math.min(labelCount, allResults.size()));
+
+            // 将结果写到image-type表中
+            imageMapper.addImageTypes(image.getImageId(), topResults);
+
+            // 组装当前图片的标签JSON对象
+            JSONObject imgJson = imageLabelResult(imageNum, topResults);
+            jsonArray.add(imgJson);
+            imageNum++;
+        }
+
+        // 3. 插入到user-image表中
+        List<Integer> imageIds = new ArrayList<>();
+        for(Image image : imageList) {
+            imageIds.add(image.getImageId());
+        }
+        userMapper.addUserImage(userId, imageIds);
+
+        // 4. 插入到album-image表中
+        albumMapper.addAlbumImage(albumId, imageIds);
+
+        return jsonArray;
+    }
+
+    /**
+     * 组装图片打标结果，用于前端显示
+     *
+     * @param imageNum
+     * @param topResults
+     * @return
+     */
+    private JSONObject imageLabelResult(int imageNum, List<AIResultVO> topResults) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("img", "图片" + (imageNum + 1));
+
+        for(int i = 0; i < topResults.size(); i++) {
+            AIResultVO resultVO = topResults.get(i);
+            String label = resultVO.getValue();
+            String confidence = String.format("%.2f%%", resultVO.getConfidence());
+            jsonObject.put("res" + (i + 1), label + confidence);
+        }
+
+        return jsonObject;
     }
 
     @Override
@@ -142,4 +217,6 @@ public class ImageServiceImpl implements ImageService {
         // 将图片加入到recycle中
         recycleMapper.addImageToRecycle(userId, imageIds);
     }
+
+
 }

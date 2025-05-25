@@ -1,6 +1,7 @@
 package com.picture.dao;
 
 import com.picture.domain.Image;
+import com.picture.domain.VO.AIResultVO;
 import com.picture.domain.VO.ImageVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +25,13 @@ public interface ImageMapper {
      * @param imageType 图片类型
      */
     void addImageType(List<Integer> imageIds, String imageType);
+
+    /**
+     * 为单个图片添加多个类别
+     * @param imageId
+     * @param imageTypes
+     */
+    void addImageTypes(Integer imageId, List<AIResultVO> imageTypes);
 
     /**
      * 根据用户Id，查询用户所有图片的时间信息
@@ -111,4 +119,6 @@ public interface ImageMapper {
      * @return
      */
     List<Image> selectImageByIds(List<Integer> imageIds);
+
+
 }

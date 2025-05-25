@@ -1,5 +1,6 @@
 package com.picture.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.picture.domain.Image;
 import com.picture.domain.VO.AllTimeTypeVO;
 import com.picture.domain.VO.ImageVO;
@@ -69,4 +70,16 @@ public interface ImageService {
      * @param imageIds 要删除的图片Id
      */
     void deleteImage(Integer userId, List<Integer> imageIds);
+
+    /**
+     * 上传图片时 使用AI打标
+     *
+     * @param imageList 要上传的图片
+     * @param userId 用户Id
+     * @param albumId 相册Id
+     * @param albumName 相册名
+     * @param labelCount 打标个数
+     * @throws Exception
+     */
+    JSONArray uploadImageWithAI(List<Image> imageList, Integer userId, Integer albumId, String albumName, int labelCount) throws Exception;
 }

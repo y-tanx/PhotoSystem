@@ -33,6 +33,14 @@
             )
         </foreach>
     </insert>
+
+    <insert id="addImageTypes" useGeneratedKeys="true">
+        INSERT INTO image_type(id, imageId, imageType)
+        VALUES
+        <foreach collection="imageTypes" item="item" separator=",">
+            (null, #{imageId}, #{item.value})
+        </foreach>
+    </insert>
     
     <select id="selectAllImageTime" resultType="Date" parameterType="Integer">
         SELECT DISTINCT imageDate

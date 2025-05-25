@@ -1,5 +1,17 @@
 package com.picture.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.imagerecog20190930.Client;
+import com.aliyun.imagerecog20190930.models.TaggingImageAdvanceRequest;
+import com.aliyun.imagerecog20190930.models.TaggingImageResponse;
+import com.aliyun.tea.TeaException;
+import com.aliyun.tea.TeaModel;
+import com.aliyun.teaopenapi.models.Config;
+import com.aliyun.teautil.Common;
+import com.aliyun.teautil.models.RuntimeOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.picture.domain.VO.AIResultVO;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,18 +20,25 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class FileServerUtil {
     @Value("${file.upload.imgPath}")
     private String uploadPath;
+    @Value("${aliyun.accessKeyId}")
+    private String accessKeyId;
+    @Value("${aliyun.accessKeySecret}")
+    private String accessKeySecret;
 
     private String uploadPrefix = "/serve/";
     private String originPrefix = "/origin/";
     private String compressPrefix = "/compress/";
     private float limitSize = 3145728;
     private float minSize =   100000;
+
 
     /**
      * 将存储在数据库中的路径转换为磁盘上对应的文件路径
@@ -203,8 +222,51 @@ public class FileServerUtil {
         }
     }
 
+    /**
+     * 使用阿里云图像识别功能，为图像打标
+     * 参考: https://help.aliyun.com/zh/viapi/use-cases/general-image-marking-1?spm=a2c4g.11186623.0.0.621b5304H8OqzS
+     *
+     * @param imagePath 图片的本地文件路径
+     * @return 打标结果，包括标签和可信度
+     * @throws Exception
+     */
+    public List<AIResultVO> imageLabel(String imagePath) throws Exception {
+        /*
+          初始化配置对象com.aliyun.teaopenapi.models.Config
+          Config对象存放 AccessKeyId、AccessKeySecret、endpoint等配置
+          */
+        Config config = new Config() .setAccessKeyId(accessKeyId)
+                .setAccessKeySecret(accessKeySecret);
 
+        // 访问的域名
+        config.setEndpoint("imagerecog.cn-shanghai.aliyuncs.com");
 
+        // 创建Client
+        Client client = new Client(config);
 
+        // 使用本地文件
+        InputStream inputStream = new FileInputStream(new File(imagePath));
+        TaggingImageAdvanceRequest taggingImageAdvanceRequest = new TaggingImageAdvanceRequest()
+                .setImageURLObject(inputStream);
+        RuntimeOptions runtime = new RuntimeOptions();
 
+        try {
+            // 获得json格式的识别结果
+            TaggingImageResponse taggingImageResponse = client.taggingImageAdvance(taggingImageAdvanceRequest, runtime);
+//            System.out.println(com.aliyun.teautil.Common.toJSONString(TeaModel.buildMap(taggingImageResponse)));
+
+            // 将json转换为实体对象
+            Gson gson = new Gson();
+            List<AIResultVO> result = gson.fromJson(JSONObject.toJSONString(taggingImageResponse.getBody().getData().tags), new TypeToken<ArrayList<AIResultVO>>(){}.getType());
+
+            return result;
+        }catch (TeaException teaException){
+            // 获取整体报错信息。
+            System.out.println(com.aliyun.teautil.Common.toJSONString(teaException));
+            // 获取单个字段。
+            System.out.println(teaException.getCode());
+
+            return null;
+        }
+    }
 }
