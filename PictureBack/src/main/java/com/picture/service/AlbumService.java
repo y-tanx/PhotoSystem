@@ -18,6 +18,13 @@ public interface AlbumService {
      */
     void addAlbum(HttpServletRequest req,String albumName, Integer userId);
     /**
+     * 设置相册封面为指定图片
+     *
+     * @param albumId 相册 ID
+     * @param imageId 图片 ID
+     */
+    void setAlbumCover(Integer albumId,Integer imageId);
+    /**
      * 查询用户的所有相册简要信息
      *
      * @param userId 用户 ID

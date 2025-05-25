@@ -111,6 +111,19 @@ public class AlbumController {
 
         return jsonObject;
     }
+    @RequestMapping("/setAlbumCover")
+    public JSONObject setAlbumCover(String token,Integer albumId,Integer imageId) throws ParseException {
+        JSONObject jsonObject = new JSONObject();
+        User user = tokenUtil.jwtParser(token);
+        if(user==null||albumId == null||imageId == null){
+            jsonObject.put("status","fail");
+            return jsonObject;
+        }
+
+        albumService.setAlbumCover(albumId,imageId);
+        jsonObject.put("status","success");
+        return jsonObject;
+    }
 
     @RequestMapping("/share")
     public JSONObject shareAlbum(String token,Integer albumId,Integer shareDay) throws ParseException {
