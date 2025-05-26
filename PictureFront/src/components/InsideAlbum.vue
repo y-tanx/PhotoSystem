@@ -136,6 +136,7 @@ export default {
   name: 'InsideAlbum',
   data() {
     return {
+      serveUrL: this.$serveUrL,
       showDialog: false,          // 控制弹窗显示
       selectedImage: null,        // 当前被点击的图片信息
       // 后端查询的图片数据

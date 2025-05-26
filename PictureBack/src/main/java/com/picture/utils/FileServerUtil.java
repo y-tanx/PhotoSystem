@@ -168,6 +168,7 @@ public class FileServerUtil {
     public String CompressImage(String ApPath,String folderName ,Float imgSize) throws IOException {
         // 压缩的图片路径为: /server/img/compress/xxx.jpg
         String MidPath= "img"+compressPrefix+folderName;
+
         File tempFile = new File(ApPath);
         if(!tempFile.getParentFile().exists()){
             tempFile.getParentFile().mkdirs();
@@ -191,6 +192,9 @@ public class FileServerUtil {
             // 使用Thumbnailator进行压缩
             Thumbnails.of(ApPath).scale(1f).outputQuality(imgRate).toFile(uploadPath+MidPath+suffix);
         }
+        System.out.println(uploadPrefix);
+        System.out.println(MidPath);
+        System.out.println(suffix);
 
         // 返回服务器中的访问路径
         return  uploadPrefix+MidPath+suffix;

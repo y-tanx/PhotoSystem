@@ -91,7 +91,8 @@ public class ImageController {
             }
 
             // 压缩图片，返回压缩后图片的路径
-            String compressUrL = fileServerUtil.CompressImage(imagePath, imageName, (float) imageSize);
+            String compressUrL = fileServerUtil.CompressImage(imagePath, userName, (float) imageSize);
+            System.out.println(compressUrL);
 
             // 创建Image对象，并加入到列表中
             imageList.add(new Image(null, imageName, imageSize, imgSite, imgDesc, imageUrL, compressUrL, imageDate));
@@ -150,7 +151,7 @@ public class ImageController {
             }
 
             // 压缩图片，返回压缩后图片的路径
-            String compressUrL = fileServerUtil.CompressImage(imagePath, imageName, (float) imageSize);
+            String compressUrL = fileServerUtil.CompressImage(imagePath, userName, (float) imageSize);
 
             // 创建Image对象，并加入到列表中
             imageList.add(new Image(null, imageName, imageSize, imgSite, imgDesc, imageUrL, compressUrL, imageDate));

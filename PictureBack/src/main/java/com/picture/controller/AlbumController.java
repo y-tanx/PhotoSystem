@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.picture.domain.VO.PartAlbumVO;
 import com.picture.domain.User;
 import com.picture.service.AlbumService;
-import com.picture.service.RecordService;
 import com.picture.utils.RedisUtil;
 import com.picture.utils.TokenUtil;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -22,8 +21,6 @@ import java.util.List;
 public class AlbumController {
     @Resource   // 将对应的Bean注入到变量中，相当于Spring自动new了这个对象
     AlbumService albumService;
-    @Resource
-    RecordService recordService;
     @Resource
     TokenUtil tokenUtil;
     @Resource
@@ -97,7 +94,7 @@ public class AlbumController {
         return jsonObject;
     }
     @RequestMapping("/selectAllImage")
-    public JSONObject selectAllImage(HttpServletRequest req,String token,Integer albumId) throws ParseException {
+    public JSONObject selectAllImage(String token,Integer albumId) throws ParseException {
         JSONObject jsonObject = new JSONObject();
         User user = tokenUtil.jwtParser(token);
         if(user==null){
@@ -108,9 +105,11 @@ public class AlbumController {
 
         jsonObject.put("status","success");
         jsonObject.put("data",res);
+        System.out.println(res);
 
         return jsonObject;
     }
+
     @RequestMapping("/setAlbumCover")
     public JSONObject setAlbumCover(String token,Integer albumId,Integer imageId) throws ParseException {
         JSONObject jsonObject = new JSONObject();

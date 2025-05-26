@@ -3,11 +3,8 @@ package com.picture.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.picture.domain.User;
 import com.picture.domain.VO.VisualDataVO;
-import com.picture.service.UserService;
 import com.picture.service.VisualService;
-import com.picture.utils.RedisUtil;
 import com.picture.utils.TokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

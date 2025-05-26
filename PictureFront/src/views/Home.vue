@@ -65,37 +65,6 @@
     </el-dialog>
 
     <!-- 图片及复选框 -->
-<!--    <div id="image-content">-->
-<!--      <div class="image-item" v-for="(item, index) in images" :key="index" :style="reactiveImage">-->
-<!--        <el-checkbox-group v-model="checkedImgIndex" @change="handleCheckedImgChange" class="check-box"-->
-<!--          :style="displayCheckedMenu">-->
-<!--          <el-checkbox :label="index">-->
-<!--          </el-checkbox>-->
-<!--        </el-checkbox-group>-->
-
-<!--        <el-image :src="serveUrL + item.compressUrL" :preview-src-list="getSrcList(index)" class="image" fit="cover">-->
-<!--          <div slot="placeholder" class="image-slot" element-loading-text="图片加载中..." v-loading="true"-->
-<!--            style="margin-top:40%">-->
-<!--          </div>-->
-<!--        </el-image>-->
-<!--        <el-image-->
-<!--            :src="serveUrL + item.compressUrL"-->
-<!--            :preview-src-list="getSrcList(index)"-->
-<!--            class="image"-->
-<!--            fit="cover"-->
-<!--            @click="openDialog(item)"-->
-<!--        >-->
-<!--          <div-->
-<!--              slot="placeholder"-->
-<!--              class="image-slot"-->
-<!--              element-loading-text="图片加载中..."-->
-<!--              v-loading="true"-->
-<!--              style="margin-top:40%"-->
-<!--          ></div>-->
-<!--        </el-image>-->
-<!--      </div>-->
-<!--    </div>-->
-    <!-- 图片及复选框 -->
     <div id="image-content">
       <div class="image-item" v-for="(item, index) in images" :key="index" :style="reactiveImage">
         <!-- 复选框 -->

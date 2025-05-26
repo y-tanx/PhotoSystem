@@ -8,7 +8,6 @@ import com.picture.domain.Operation;
 import com.picture.domain.VO.AlbumImageVO;
 import com.picture.domain.VO.PartAlbumVO;
 import com.picture.service.AlbumService;
-import com.picture.service.RecordService;
 import com.picture.utils.DateUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +25,6 @@ public class AlbumServiceImpl implements AlbumService {
     @Resource
     AlbumMapper albumMapper;
     @Resource
-    RecordService recordService;
-    @Resource
     DateUtil dateUtil;
 
     // 默认相册封面图片路径
@@ -44,9 +41,6 @@ public class AlbumServiceImpl implements AlbumService {
 
         // 将相册信息写入数据库
         albumMapper.addAlbum(album);
-
-        // 添加操作记录，创建相册
-        recordService.addRecord(req, Operation.createAlbum.getName()+"\""+albumName+"\"", 1,userId);
     }
 
     @Override
@@ -65,8 +59,6 @@ public class AlbumServiceImpl implements AlbumService {
 
         // 获取相册名称，用于日志记录
         String albumName = albumMapper.selectAlbum(albumId);
-
-        recordService.addRecord(req, Operation.addImageToAlbum.getName()+"\""+albumName+"\"", imageId.size(),userId);
     }
 
     @Override
@@ -79,7 +71,6 @@ public class AlbumServiceImpl implements AlbumService {
 
         // 获取相册名称，用于日志记录
         String albumName = albumMapper.selectAlbum(albumId);
-        recordService.addRecord(req, "\""+albumName+"\""+Operation.deleteAlbumImage.getName(), imageId.size(),userId);
     }
 
     @Override
@@ -90,7 +81,6 @@ public class AlbumServiceImpl implements AlbumService {
 
         // 删除与相册关联的图片
         albumMapper.deleteAlbumImageByAlbum(albumIds);
-        recordService.addRecord(req,Operation.deleteAlbum.getName(), albumIds.size(),userId);
     }
 
     @Override
