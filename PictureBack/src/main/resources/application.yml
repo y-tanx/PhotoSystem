@@ -9,7 +9,7 @@ spring:
     password: 123456 # 需要修改为自己的密码
   jwt:
     signature: picture
-    ttl: 18000000
+    ttl: 180000000000000
   mail:
     host: smtp.qq.com
     port: 465

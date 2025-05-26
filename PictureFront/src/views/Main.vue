@@ -37,14 +37,6 @@
               </div>
             </router-link>
           </a-menu-item>
-<!--          <a-menu-item class="menu-item" key="4">-->
-<!--            <router-link :key="$route.fullPath" to="/Record">-->
-<!--              <div class="a-menu-item">-->
-<!--                <a-icon type="carry-out" />-->
-<!--                <span>操作记录</span>-->
-<!--              </div>-->
-<!--            </router-link>-->
-<!--          </a-menu-item>-->
 
           <a-sub-menu class="menu-item" key="5">
             <span slot="title">
@@ -171,12 +163,12 @@ export default {
         avatar: "/static/avatar/default.jpg",
         birthday: "2022-08-20 00:00:00",
         capacity: 1000,
-        city: "陕西,西安",
-        email: "1609048001@qq.com",
+        city: "黑龙江,哈尔滨",
+        email: "727653626@qq.com",
         passWord: "123456",
-        phone: "13891531948",
+        phone: "13845033406",
         userId: 1,
-        userName: "xiaohua",
+        userName: "User",
       },
       token: '11', //token凭证
       serveUrL: this.$serveUrL,

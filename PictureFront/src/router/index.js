@@ -119,14 +119,6 @@ const routes = [
           },
         },
         {
-          path: '/SecuritySet',
-          name: 'SecuritySet',
-          component: () => import('@/components/SecuritySet'),
-          meta: {
-            Required: true
-          },
-        },
-        {
           path: '/PersonalSet',
           name: 'PersonalSet',
           component: () => import('@/components/PersonalSet'),

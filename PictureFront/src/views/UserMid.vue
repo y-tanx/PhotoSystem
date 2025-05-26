@@ -7,7 +7,7 @@
       </div>
       <div class="sleft-UserName">
         <h2>{{ user.userName }}</h2>
-        <h3>好好学习，天天向上！</h3>
+        <h3>编辑个人签名</h3>
       </div>
       <el-divider></el-divider>
       <div class="sleft-iteam">
@@ -30,40 +30,15 @@
         <i class="el-icon-mobile-phone"></i>:
         <span>{{ user.phone }}</span>
       </div>
-
-
     </div>
 
     <div class="smid-content">
 
 
-<!--      <el-dialog title="支付" :visible.sync="dialogVisible" width="30%" >-->
-
-<!--        <div >-->
-<!--        <el-radio-group v-model="display" style="margin-bottom: 30px;">-->
-<!--          <el-radio-button :label="true">微信</el-radio-button>-->
-<!--          <el-radio-button :label="false">支付宝</el-radio-button>-->
-<!--        </el-radio-group>-->
-<!--        <img src="../assets/pay/1.jpg" :style="{ display: display?'block':'none', width: '50%' }" />-->
-<!--        <img src="../assets/pay/2.jpg" :style="{ display: display?'none':'block', width: '50%'  }" />-->
-<!--        </div>-->
-<!--        <span slot="footer" class="dialog-footer">-->
-<!--          <el-button @click="dialogVisible = false">取 消</el-button>-->
-<!--          <el-button type="primary" @click="dialogVisible = false">支付</el-button>-->
-<!--        </span>-->
-<!--      </el-dialog>-->
       <h1>存储信息</h1>
       <div class="smid-content-1">
-        <a-statistic title="共有内存:" :precision="2" :value="imgInfo.capacity" suffix="Mb" />
         <a-statistic title="总照片数：" :value="imgInfo.imageSumNumber" suffix="张" />
         <a-statistic title="现占用内存:" :precision="2" :value="imgInfo.imageSumSize" suffix="Mb" />
-      </div>
-
-      <div class="smid-content-2">
-        <h3 style="padding :10px">存储占比:</h3>
-        <el-progress type="circle" :percentage="percentage"></el-progress>
-        <el-button type="text" style="position: absolute;top:100px;left:150px" @click="dialogVisible = true">
-        </el-button>
       </div>
     </div>
 
@@ -77,7 +52,6 @@ export default {
   data() {
     return {
 
-      // 支付信息
       dialogVisible: false,
       display: true,
       toekn: '',
@@ -85,13 +59,13 @@ export default {
         avatar: "/static/avatar/default.jpg",
         birthday: "2022-08-20 00:00:00",
         capacity: 1000,
-        city: "陕西;西安",
+        city: "黑龙江; 哈尔滨",
         email: "1609048001@qq.com",
         passWord: "123456",
         sex: '',
         phone: "13891531948",
         userId: 1,
-        userName: "xiaohua"
+        userName: "User"
       },
       ImgSize: 12,
 
@@ -157,8 +131,6 @@ export default {
       }).then(function (resp) {
         if (resp.data.status == 'success') {
           _this.imgInfo = resp.data.data;
-          _this.percentage = Math.floor(100 * 100 * _this.imgInfo.imageSumSize / _this.imgInfo.capacity) / 100;
-
         }
       }
       );
@@ -196,7 +168,7 @@ export default {
 .sleft-aside {
   border-right: #ebe6cf solid 1px;
   margin-left: 2%;
-  width: 30%;
+  width: 40%;
   height: 100%;
   float: left;
 }
@@ -250,7 +222,7 @@ export default {
   /* border: #d9d9d9 solid 1px;
    */
   margin-left: 2%;
-  width: 60%;
+  width: 55%;
   height: 100%;
   float: left;
 }

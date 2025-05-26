@@ -29,8 +29,8 @@ public class UserController {
      * @return
      */
     @RequestMapping("/login")
-    public ResultMessage loginUser(String userName, String passWord){
-        User user = new User(userName,passWord);
+    public ResultMessage loginUser(String userName, String passWord) {
+        User user = new User(userName, passWord);
 
         System.out.println("password:"+passWord);
         Integer userId = userService.selectUserId(user);

@@ -138,15 +138,6 @@ export default {
     return {
       showDialog: false,          // 控制弹窗显示
       selectedImage: null,        // 当前被点击的图片信息
-      // 相册分享有效期天数
-      shareAlbumUrL:'http://xiaohua.live',
-      shareRadio:7,
-      shareDialogVisible: false,
-      currentAlbumId: 0,
-      currentAlbumName: '',
-      token: '',  //token凭证
-      isRouterAlive: true,
-      serveUrL: this.$serveUrL,
       // 后端查询的图片数据
       images: [
         {
