@@ -75,8 +75,19 @@ public class AlbumController {
             jsonObject.put("status","fail");
             return jsonObject;
         }
-        albumService.addAlbum(req,albumName,user.getUserId());
-        jsonObject.put("status","success");
+        try {
+            albumService.addAlbum(req,albumName,user.getUserId());
+            jsonObject.put("status","success");
+        } catch (RuntimeException e) {
+            if(e.getMessage().equals("相册名已存在")) {
+                jsonObject.put("status","exist");
+                jsonObject.put("message","相册名已存在");
+            } else {
+                jsonObject.put("status","fail");
+            }
+        }
+//        albumService.addAlbum(req,albumName,user.getUserId());
+//        jsonObject.put("status","success");
         return jsonObject;
     }
 
