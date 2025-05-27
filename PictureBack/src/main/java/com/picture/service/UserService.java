@@ -16,6 +16,12 @@ public interface UserService {
      * @return
      */
     Integer selectUserId(User user);
+    /**
+     * 查询用户资料
+     * @param id
+     * @return
+     */
+    User selectUserById(int id);
 
     /**
      * 查询用户名是否存在

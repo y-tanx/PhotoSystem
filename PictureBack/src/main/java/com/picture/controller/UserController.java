@@ -71,6 +71,34 @@ public class UserController {
             return ResultMessage.success(200,"登录成功!",token);
         }
     }
+    /**
+     * 查询当前登录用户的信息
+     * @param token 用户 token
+     * @return 用户信息（包含 token）
+     */
+    @RequestMapping("/selectUser")
+    public JSONObject selectUser(String token){
+        JSONObject jsonObject= new JSONObject();
+        User userToken = tokenUtil.jwtParser(token);
+        User user = null;
+
+        // 根据userID获得user对象
+        // 把查询到的user对象添加到返回的JSON中
+        if(userToken.getUserId()!=null) user = userService.selectUserById(userToken.getUserId());
+        if(user!=null) {
+            jsonObject.put("status", "success");
+            jsonObject.put("user", user);
+            JSONObject res =  jsonObject.getJSONObject("user");
+            res.put("token",token); // 附带token传回前端
+            jsonObject.put("user",res);
+            return jsonObject;
+        }
+        else{
+            jsonObject.put("status", "fail");
+
+        }
+        return jsonObject;
+    }
 
     @RequestMapping("/resetPassword")
     public JSONObject resetPassword(@RequestParam("username") String userName, String password, String email, String codeNumber){

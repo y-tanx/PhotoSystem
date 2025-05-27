@@ -41,6 +41,18 @@ public interface UserMapper {
     Integer selectUserId(User user);
 
     /**
+     * 用户查询
+     * @param userId
+     * @return
+     */
+    @Select("select * from user where id=#{userId}")
+    @ResultType(User.class)
+    @Results(id="UserResultMap" ,value = {
+            @Result(property = "userId",column = "id"),
+    })
+    User selectUserById(int userId);
+
+    /**
      * 用户账号查询，防止重复注册
      * @param UserName
      * @return
