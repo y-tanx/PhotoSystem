@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/user")
@@ -24,6 +27,7 @@ public class UserController {
     private UserService userService;
     //默认头像
     private String defaultAvatar = "/static/avatar/default.jpg";
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     /**
      * 用户注册
      * @param userName 用户名
@@ -70,6 +74,71 @@ public class UserController {
             String token = tokenUtil.createToken(user.getUserName(), userId);
             return ResultMessage.success(200,"登录成功!",token);
         }
+    }
+    /**
+     * 查询当前登录用户的信息
+     * @param token 用户 token
+     * @return 用户信息（包含 token）
+     */
+    @RequestMapping("/selectUser")
+    public JSONObject selectUser(String token){
+        JSONObject jsonObject= new JSONObject();
+        User userToken = tokenUtil.jwtParser(token);
+        User user = null;
+
+        // 根据userID获得user对象
+        // 把查询到的user对象添加到返回的JSON中
+        if(userToken.getUserId()!=null) user = userService.selectUserById(userToken.getUserId());
+        if(user!=null) {
+            jsonObject.put("status", "success");
+            jsonObject.put("user", user);
+            JSONObject res =  jsonObject.getJSONObject("user");
+            res.put("token",token); // 附带token传回前端
+            jsonObject.put("user",res);
+            return jsonObject;
+        }
+        else{
+            jsonObject.put("status", "fail");
+
+        }
+        return jsonObject;
+    }
+    /**
+     * 更新用户信息（性别、邮箱、电话、城市、生日）
+     * @param token 用户 token
+     * @param sex 性别
+     * @param email 邮箱
+     * @param phone 电话
+     * @param city 城市
+     * @param birthday 生日（格式为 yyyy-MM-dd）
+     * @return 更新结果状态
+     */
+    @RequestMapping("/updateUser")
+    public JSONObject updateUser(String token,String sex,String email,String phone,String city,String birthday) throws ParseException {
+        JSONObject jsonObject= new JSONObject();
+        User userToken = tokenUtil.jwtParser(token);
+        if(userToken!=null){
+            userToken.setSex(sex);
+            userToken.setEmail(email);
+            userToken.setPhone(phone);
+            userToken.setCity(city);
+        }
+        else{
+            jsonObject.put("status", "fail");
+            return jsonObject;
+        }
+        Date b;
+        if(birthday.equals("null")||birthday.equals("")){
+            System.out.println(1);
+            b=null;
+        }
+        else{
+            b  =dateFormat.parse(birthday);
+        }
+        userToken.setBirthday(b);
+        userService.updateUser(userToken);
+        jsonObject.put("status", "success");
+        return jsonObject;
     }
 
     @RequestMapping("/resetPassword")
