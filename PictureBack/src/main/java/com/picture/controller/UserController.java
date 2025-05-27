@@ -22,6 +22,35 @@ public class UserController {
     RedisUtil redisUtil;
     @Resource
     private UserService userService;
+    //默认头像
+    private String defaultAvatar = "/static/avatar/default.jpg";
+    /**
+     * 用户注册
+     * @param userName 用户名
+     * @param passWord 密码
+     * @param email 邮箱地址
+     * @param codeNumber 验证码（来自邮箱）
+     * @return 注册结果（状态码：exist/codeError/success）
+     */
+    @RequestMapping("/add")
+    public JSONObject addUser(@RequestParam("username")String userName,@RequestParam("password")String passWord,String email,String codeNumber){
+        JSONObject jsonObject = new JSONObject();
+        if(userService.selectUserName(userName)!=null){
+            jsonObject.put("status","exist");
+            return jsonObject;
+        }
+
+        // Redis用于存储验证码
+        String redisCode = redisUtil.get(email);
+        if(!codeNumber.equals(redisCode)){
+            jsonObject.put("status","codeError");
+            return jsonObject;
+        }
+        User user = new User(null,userName,passWord,null,email,null,null,null,5000,defaultAvatar);
+        userService.addUser(user);
+        jsonObject.put("status","success");
+        return jsonObject;
+    }
     /**
      * 用户登录
      * @param userName

@@ -1,14 +1,21 @@
 package com.picture.dao;
 
 import com.picture.domain.User;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
 public interface UserMapper {
+    List<User> selectAllUser();
+    /**
+     * 用户注册
+     * @param user
+     * @return
+     */
+    @Insert("insert into user values (null,#{userName},#{passWord},#{sex},#{email},#{phone},#{city},#{birthday},#{capacity},#{avatar})")
+    @Options(useGeneratedKeys = true, keyProperty = "userId")
+    int add(User user);
     /**
      * 将用户id-图片id插入到user-image表中
      *
