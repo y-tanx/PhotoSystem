@@ -11,6 +11,16 @@ import javax.annotation.Resource;
 public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
+    /**
+     * 用户注册
+     * @param user
+     * @return
+     */
+    @Override
+    public Integer addUser(User user) {
+        Integer userId = userMapper.add(user);  // 将用户信息插入到user表中
+        return userId;
+    }
 
     /**
      * 查询用户id
