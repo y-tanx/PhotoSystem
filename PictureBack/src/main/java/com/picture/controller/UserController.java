@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/user")
@@ -24,6 +27,7 @@ public class UserController {
     private UserService userService;
     //默认头像
     private String defaultAvatar = "/static/avatar/default.jpg";
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     /**
      * 用户注册
      * @param userName 用户名
@@ -97,6 +101,43 @@ public class UserController {
             jsonObject.put("status", "fail");
 
         }
+        return jsonObject;
+    }
+    /**
+     * 更新用户信息（性别、邮箱、电话、城市、生日）
+     * @param token 用户 token
+     * @param sex 性别
+     * @param email 邮箱
+     * @param phone 电话
+     * @param city 城市
+     * @param birthday 生日（格式为 yyyy-MM-dd）
+     * @return 更新结果状态
+     */
+    @RequestMapping("/updateUser")
+    public JSONObject updateUser(String token,String sex,String email,String phone,String city,String birthday) throws ParseException {
+        JSONObject jsonObject= new JSONObject();
+        User userToken = tokenUtil.jwtParser(token);
+        if(userToken!=null){
+            userToken.setSex(sex);
+            userToken.setEmail(email);
+            userToken.setPhone(phone);
+            userToken.setCity(city);
+        }
+        else{
+            jsonObject.put("status", "fail");
+            return jsonObject;
+        }
+        Date b;
+        if(birthday.equals("null")||birthday.equals("")){
+            System.out.println(1);
+            b=null;
+        }
+        else{
+            b  =dateFormat.parse(birthday);
+        }
+        userToken.setBirthday(b);
+        userService.updateUser(userToken);
+        jsonObject.put("status", "success");
         return jsonObject;
     }
 

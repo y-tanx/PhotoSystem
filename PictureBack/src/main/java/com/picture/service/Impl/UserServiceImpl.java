@@ -42,6 +42,15 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectUserById(id);  // 根据id在user表中查询用户信息
         return user;
     }
+    /**
+     * 用户资料更新
+     * @param user
+     */
+    @Override
+    public void updateUser(User user) {
+        // 更新用户信息为user
+        userMapper.updateUser(user);
+    }
 
     @Override
     public boolean resetPassword(User user) {

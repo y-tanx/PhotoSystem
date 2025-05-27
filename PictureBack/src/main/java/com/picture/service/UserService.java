@@ -22,6 +22,11 @@ public interface UserService {
      * @return
      */
     User selectUserById(int id);
+    /**
+     * 修改用户资料
+     * @param user
+     */
+    void updateUser(User user);
 
     /**
      * 查询用户名是否存在
