@@ -22,11 +22,7 @@ public class RecycleController {
     @Resource
     private RecycleService recycleService;
     @Resource
-    private ImageService imageService;
-    @Resource
     TokenUtil tokenUtil;
-    @Autowired
-    private ImageMapper imageMapper;
 
     @RequestMapping("/selectAll")
     public JSONObject selectAll(String token) {

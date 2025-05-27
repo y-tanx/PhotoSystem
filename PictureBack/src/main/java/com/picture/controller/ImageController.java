@@ -2,11 +2,12 @@ package com.picture.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.picture.dao.ImageMapper;
 import com.picture.domain.Image;
 import com.picture.domain.User;
 import com.picture.domain.VO.AllTimeTypeVO;
 import com.picture.domain.VO.ImageVO;
-import com.picture.service.Impl.ImageServiceImpl;
+import com.picture.service.ImageService;
 import com.picture.utils.EXIFUtil;
 import com.picture.utils.FileServerUtil;
 import com.picture.utils.TokenUtil;
@@ -38,7 +39,7 @@ public class ImageController {
     @Resource
     private EXIFUtil exifUtil;
     @Resource
-    private ImageServiceImpl imageService;
+    private ImageService imageService;
 
     /**
      * 上传图片，同一批上传的图片的拍摄地点,类型和注释相同
