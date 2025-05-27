@@ -69,6 +69,15 @@ public class UserServiceImpl implements UserService {
         userMapper.resetPasswordByUserName(userName, password);
         return true;
     }
+    /**
+     * 用户头像更新
+     * @param user
+     */
+    @Override
+    public void updateUserAvatar(User user) {
+        // 更新用户头像图片
+        userMapper.updateUserAvatar(user);
+    }
 
     @Override
     public String selectUserName(String UserName) {

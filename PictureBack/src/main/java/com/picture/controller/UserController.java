@@ -5,13 +5,16 @@ import com.picture.common.ResultMessage;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.picture.domain.User;
 import com.picture.service.UserService;
+import com.picture.utils.FileServerUtil;
 import com.picture.utils.RedisUtil;
 import com.picture.utils.TokenUtil;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,6 +26,8 @@ public class UserController {
     private TokenUtil tokenUtil;
     @Resource
     RedisUtil redisUtil;
+    @Resource
+    private FileServerUtil fileServerUtil;
     @Resource
     private UserService userService;
     //默认头像
@@ -169,6 +174,31 @@ public class UserController {
         }
         return jsonObject;
     }
-
+    /**
+     * 更新用户头像
+     * @param token 用户 token
+     * @param multipartFile 上传的头像文件
+     * @return 上传结果
+     */
+    @RequestMapping("/updateAvatar")
+    public JSONObject updateUserAvatar(String token,@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        User user = tokenUtil.jwtParser(token);
+        if(user==null){
+            jsonObject.put("status", "fail");
+            return jsonObject;
+        }
+        user = userService.selectUserById(user.getUserId());
+        //先删除原来头像
+        fileServerUtil.deleteServe(user.getAvatar());
+        //上传类型是头像，文件夹名采用用户名
+        String avatarPath = fileServerUtil.uploadServe("avatar", user.getUserName(), multipartFile);
+        if(user!=null){
+            user.setAvatar(avatarPath);
+        }
+        userService.updateUserAvatar(user);
+        jsonObject.put("status", "success");
+        return jsonObject;
+    }
 
 }

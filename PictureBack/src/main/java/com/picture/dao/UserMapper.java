@@ -70,6 +70,16 @@ public interface UserMapper {
     String selectUserName(String UserName);
 
     /**
+     * 用户头像修改
+     * @param user
+     */
+    @Update("update user  set avatar=#{avatar} where id=#{userId}")
+    @Results(id="UserResultMap" ,value = {
+            @Result(property = "userId",column = "id"),
+    })
+    void updateUserAvatar(User user);
+
+    /**
      * 根据userName更改用户的密码
      *
      * @param userName

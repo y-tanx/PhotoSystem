@@ -37,6 +37,12 @@ public interface UserService {
     String selectUserName(String UserName);
 
     /**
+     * 修改用户头像
+     * @param user
+     */
+    void updateUserAvatar(User user);
+
+    /**
      * 重置用户密码
      *
      * @param user 用户信息
