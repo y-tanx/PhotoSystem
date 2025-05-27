@@ -16,6 +16,14 @@ public interface AlbumMapper {
      */
     void addAlbum(Album album);
 
+    /**
+     * 相册名查询，防止重复创建
+     * @param albumName,userId
+     * @return
+     */
+    @Select("select albumName from album where albumName = #{albumName} and userId = #{userId}")
+    String selectAlbumByName(@Param("albumName") String albumName, @Param("userId") Integer userId);
+
     @Update("update album set albumImg = (select compressUrL from image where image.id=#{imageId}) where album.id =#{albumId} ")
     void uploadAlbum(Integer albumId,Integer imageId);
 

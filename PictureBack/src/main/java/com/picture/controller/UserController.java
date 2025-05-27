@@ -48,7 +48,6 @@ public class UserController {
             jsonObject.put("status","exist");
             return jsonObject;
         }
-
         // Redis用于存储验证码
         String redisCode = redisUtil.get(email);
         if(!codeNumber.equals(redisCode)){

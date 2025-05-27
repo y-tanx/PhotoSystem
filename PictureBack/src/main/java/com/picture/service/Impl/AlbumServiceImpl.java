@@ -33,6 +33,12 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     @Transactional(rollbackFor = Exception.class)   // 事务注解: 在方法执行时，Spring会开启一个数据库事务
     public void addAlbum(HttpServletRequest req, String albumName, Integer userId) {
+        // 检查相册名是否已存在
+        String existingAlbum = albumMapper.selectAlbumByName(albumName, userId);
+        if(existingAlbum != null) {
+            throw new RuntimeException("相册名已存在");
+        }
+
         Album album = new Album();
         album.setAlbumImg(defaultAlbum);
         album.setUserId(userId);
@@ -42,6 +48,8 @@ public class AlbumServiceImpl implements AlbumService {
         // 将相册信息写入数据库
         albumMapper.addAlbum(album);
     }
+
+
 
     @Override
     public List<PartAlbumVO> selectAllAlbum(Integer userId) {
