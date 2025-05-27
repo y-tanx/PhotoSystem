@@ -131,18 +131,47 @@ public class UserController {
             jsonObject.put("status", "fail");
             return jsonObject;
         }
-        Date b;
-        if(birthday.equals("null")||birthday.equals("")){
-            System.out.println(1);
-            b=null;
+        // 先获取用户的完整信息
+        User existingUser = userService.selectUserById(userToken.getUserId());
+        if(existingUser == null) {
+            jsonObject.put("status", "fail");
+            return jsonObject;
         }
-        else{
-            b  =dateFormat.parse(birthday);
+        // 只更新非空字段
+        if(sex != null && !sex.trim().isEmpty()) {
+            existingUser.setSex(sex);
         }
-        userToken.setBirthday(b);
-        userService.updateUser(userToken);
+        if(email != null && !email.trim().isEmpty()) {
+            existingUser.setEmail(email);
+        }
+        if(phone != null && !phone.trim().isEmpty()) {
+            existingUser.setPhone(phone);
+        }
+        if(city != null && !city.trim().isEmpty()) {
+            existingUser.setCity(city);
+        }
+
+        // 处理生日字段
+        if(birthday != null && !birthday.equals("null") && !birthday.trim().isEmpty()) {
+            Date b = dateFormat.parse(birthday);
+            existingUser.setBirthday(b);
+        }
+
+        userService.updateUser(existingUser);
         jsonObject.put("status", "success");
         return jsonObject;
+//        Date b;
+//        if(birthday.equals("null")||birthday.equals("")){
+//            System.out.println(1);
+//            b=null;
+//        }
+//        else{
+//            b  =dateFormat.parse(birthday);
+//        }
+//        userToken.setBirthday(b);
+//        userService.updateUser(userToken);
+//        jsonObject.put("status", "success");
+//        return jsonObject;
     }
 
     @RequestMapping("/resetPassword")
