@@ -122,56 +122,18 @@ public class UserController {
         JSONObject jsonObject= new JSONObject();
         User userToken = tokenUtil.jwtParser(token);
         if(userToken!=null){
-            userToken.setSex(sex);
-            userToken.setEmail(email);
-            userToken.setPhone(phone);
-            userToken.setCity(city);
+            userToken.setSex(sex.trim());
+            userToken.setEmail(email.trim());
+            userToken.setPhone(phone.trim());
+            userToken.setCity(city.trim());
         }
         else{
             jsonObject.put("status", "fail");
             return jsonObject;
         }
-        // 先获取用户的完整信息
-        User existingUser = userService.selectUserById(userToken.getUserId());
-        if(existingUser == null) {
-            jsonObject.put("status", "fail");
-            return jsonObject;
-        }
-        // 只更新非空字段
-        if(sex != null && !sex.trim().isEmpty()) {
-            existingUser.setSex(sex);
-        }
-        if(email != null && !email.trim().isEmpty()) {
-            existingUser.setEmail(email);
-        }
-        if(phone != null && !phone.trim().isEmpty()) {
-            existingUser.setPhone(phone);
-        }
-        if(city != null && !city.trim().isEmpty()) {
-            existingUser.setCity(city);
-        }
-
-        // 处理生日字段
-        if(birthday != null && !birthday.equals("null") && !birthday.trim().isEmpty()) {
-            Date b = dateFormat.parse(birthday);
-            existingUser.setBirthday(b);
-        }
-
-        userService.updateUser(existingUser);
+        userService.updateUser(userToken);
         jsonObject.put("status", "success");
         return jsonObject;
-//        Date b;
-//        if(birthday.equals("null")||birthday.equals("")){
-//            System.out.println(1);
-//            b=null;
-//        }
-//        else{
-//            b  =dateFormat.parse(birthday);
-//        }
-//        userToken.setBirthday(b);
-//        userService.updateUser(userToken);
-//        jsonObject.put("status", "success");
-//        return jsonObject;
     }
 
     @RequestMapping("/resetPassword")

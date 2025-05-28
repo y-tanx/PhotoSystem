@@ -7,7 +7,6 @@ import java.util.List;
 
 @Mapper
 public interface UserMapper {
-    List<User> selectAllUser();
     /**
      * 用户注册
      * @param user
@@ -55,10 +54,6 @@ public interface UserMapper {
      * 用户资料修改
      * @param user
      */
-    @Update("update user  set sex=#{sex} ,email = #{email} ,Phone = #{phone} ,city=#{city},birthday=#{birthday} where id=#{userId}")
-    @Results(id="UserResultMap" ,value = {
-            @Result(property = "userId",column = "id"),
-    })
     void updateUser(User user);
 
     /**

@@ -20,5 +20,17 @@
                 #{id}
             </foreach>
     </delete>
+
+    <update id="updateUser" parameterType="com.picture.domain.User">
+        UPDATE user
+        <set>
+            <if test="sex != null and sex.trim() != ''"> sex = #{sex}, </if>
+            <if test="email != null and email.trim() != ''"> email = #{email}, </if>
+            <if test="phone != null and phone.trim() != ''"> phone = #{phone}, </if>
+            <if test="city != null and city.trim() != ''"> city = #{city}, </if>
+            <if test="birthday != null and birthday.trim() != ''"> birthday = #{birthday}, </if>
+        </set>
+        WHERE id = #{userId}
+    </update>
     
 </mapper>

@@ -38,8 +38,8 @@ public class VisualServiceImpl implements VisualService {
     @Override
     public JSONObject selectAllImageInfo(Integer userId) {
         JSONObject jsonObject = new JSONObject();
-        Integer imageTotalNumber = imageMapper.selectImageCount(userId);
-        Integer imageTotalSize = visualMapper.selectImageTotalSize(userId);
+        Integer imageTotalNumber = imageMapper.selectImageCount(userId) == null ? 0 : imageMapper.selectImageCount(userId);
+        Integer imageTotalSize = visualMapper.selectImageTotalSize(userId) == null ? 0 : visualMapper.selectImageTotalSize(userId);
         jsonObject.put("imageSumSize", ((float)imageTotalSize/1024/1024));
         jsonObject.put("imageSumNumber", imageTotalNumber);
         return jsonObject;

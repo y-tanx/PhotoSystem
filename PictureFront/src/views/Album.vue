@@ -181,8 +181,12 @@ export default {
                         });
                         _this.selectAlbums();
                     }
-                    else {
-                        1;
+                    else if (resp.data.status == "exist") {
+                      _this.$message({
+                        type: 'error',
+                        message: '相册名重复'
+                      });
+                      _this.selectAlbums();
                     }
                 })
 
