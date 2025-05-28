@@ -7,6 +7,10 @@ spring:
     url: jdbc:mysql://localhost:3306/picture?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: 123456 # 需要修改为自己的密码
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
   jwt:
     signature: picture
     ttl: 180000000000000
