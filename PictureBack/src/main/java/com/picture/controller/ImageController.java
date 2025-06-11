@@ -11,6 +11,7 @@ import com.picture.service.ImageService;
 import com.picture.utils.EXIFUtil;
 import com.picture.utils.FileServerUtil;
 import com.picture.utils.TokenUtil;
+import java.io.InputStream;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,16 +81,18 @@ public class ImageController {
             String imageName = file.getOriginalFilename();
             long imageSize = file.getSize();
 
+            // 提取图片的拍摄时间/最后修改时间
+            // 不能在upload之后执行，因为upload时会将file的流用完
+            InputStream inputStream = file.getInputStream();
+            Date imageDate = exifUtil.getImageDate(inputStream);
+            inputStream.close();
+            if (imageDate == null) {
+                imageDate = new Date();
+            }
+
             // 将图片文件保存到userName目录下，返回图片文件在Web上的路径
             String imageUrL = fileServerUtil.uploadServe("img", userName, file);
             String imagePath = fileServerUtil.ServPathToAP(imageUrL);   // 这是本地存储路径
-
-            // 提取图片的拍摄时间/最后修改时间
-            Date imageDate = exifUtil.getImageDate(new File(imagePath));    // 根据图片路径，获得图片的拍摄时间/最后修改时间
-            if(imageDate == null)
-            {
-                imageDate = new Date();
-            }
 
             // 压缩图片，返回压缩后图片的路径
             String compressUrL = fileServerUtil.CompressImage(imagePath, userName, (float) imageSize);
@@ -140,16 +143,17 @@ public class ImageController {
             String imageName = file.getOriginalFilename();
             long imageSize = file.getSize();
 
-            // 将图片文件保存到userName目录下，返回图片文件在Web上的路径
-            String imageUrL = fileServerUtil.uploadServe("img", userName, file);
-            String imagePath = fileServerUtil.ServPathToAP(imageUrL);   // 这是本地存储路径
-
             // 提取图片的拍摄时间/最后修改时间
-            Date imageDate = exifUtil.getImageDate(new File(imagePath));    // 根据图片路径，获得图片的拍摄时间/最后修改时间
+            InputStream inputStream = file.getInputStream();
+            Date imageDate = exifUtil.getImageDate(inputStream);    // 根据图片路径，获得图片的拍摄时间/最后修改时间
             if(imageDate == null)
             {
                 imageDate = new Date();
             }
+
+            // 将图片文件保存到userName目录下，返回图片文件在Web上的路径
+            String imageUrL = fileServerUtil.uploadServe("img", userName, file);
+            String imagePath = fileServerUtil.ServPathToAP(imageUrL);   // 这是本地存储路径
 
             // 压缩图片，返回压缩后图片的路径
             String compressUrL = fileServerUtil.CompressImage(imagePath, userName, (float) imageSize);
