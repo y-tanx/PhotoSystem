@@ -42,7 +42,7 @@ public class ImageController {
     private AliyunOssUtil aliyunOssUtil;
 
     /**
-     * 上传图片，同一批上传的图片的拍摄地点,类型和注释相同
+     * 上传图片，同一批上传的图片的拍摄地点、类型和注释相同
      *
      * @param albumName 相册名
      * @param albumId 相册Id
@@ -75,34 +75,7 @@ public class ImageController {
         imgDesc = imgDesc == null ? "请输入文本" : imgDesc;
 
         // 将所有要上传的图片信息存入集合
-        List<Image> imageList = new ArrayList<>();
-        for (MultipartFile file : multipartFiles) {
-            // 获取图片的名称和字节数
-            String imageName = file.getOriginalFilename();
-            long imageSize = file.getSize();
-
-            // 提取图片的拍摄时间/最后修改时间
-            // 不能在upload之后执行，因为upload时会将file的流用完
-            InputStream inputStream = file.getInputStream();
-            Date imageDate = exifUtil.getImageDate(inputStream);
-            inputStream.close();
-            if (imageDate == null) {
-                imageDate = new Date();
-            }
-
-            // 将图片文件保存到OSS中，返回图片文件在OSS上的路径
-            InputStream inputStream1 = file.getInputStream();
-            String imageUrL = aliyunOssUtil.uploadOriginImage(userName, imageName, inputStream1, CannedAccessControlList.PublicRead, null);
-            inputStream1.close();
-
-            // 图片压缩，用于缩略图展示
-            InputStream inputStream2 = file.getInputStream();
-            String compressUrL = aliyunOssUtil.uploadCompressImage(userName, imageName, (float)imageSize, inputStream2, CannedAccessControlList.PublicRead, null);
-            inputStream2.close();
-
-            // 创建Image对象，并加入到列表中
-            imageList.add(new Image(null, imageName, imageSize, imgSite, imgDesc, imageUrL, compressUrL, imageDate));
-        }
+        List<Image> imageList = handleImageUpload(multipartFiles, userName, imgSite, imgDesc);
 
         // 在数据库中插入记录
         boolean status = imageService.uploadImage(imageList, userId, albumId, albumName, imgType);
@@ -122,6 +95,18 @@ public class ImageController {
         return json;
     }
 
+    /**
+     * 上传图片并调用 AI 模型进行标签识别
+     *
+     * @param token 用户身份令牌
+     * @param albumName 相册名称
+     * @param albumId 相册 ID
+     * @param imgSite 拍摄地点
+     * @param imgDesc 图片描述
+     * @param resNumber 标签数量
+     * @param multipartFiles 上传的图片文件
+     * @return JSON对象，包含状态和AI识别标签数据
+     */
     @RequestMapping("/uploadAI")
     public JSONObject uploadAI(String token, String albumName, Integer albumId, String imgSite, String imgDesc, Integer resNumber, @RequestParam("file")MultipartFile[] multipartFiles ) throws Exception {
         JSONObject json = new JSONObject();
@@ -140,34 +125,7 @@ public class ImageController {
         imgDesc = imgDesc == null ? "请输入文本" : imgDesc;
 
         // 将所有要上传的图片信息存入集合
-        List<Image> imageList = new ArrayList<>();
-        for (MultipartFile file : multipartFiles) {
-            // 获取图片的名称和字节数
-            String imageName = file.getOriginalFilename();
-            long imageSize = file.getSize();
-
-            // 提取图片的拍摄时间/最后修改时间
-            // 不能在upload之后执行，因为upload时会将file的流用完
-            InputStream inputStream = file.getInputStream();
-            Date imageDate = exifUtil.getImageDate(inputStream);
-            inputStream.close();
-            if (imageDate == null) {
-                imageDate = new Date();
-            }
-
-            // 将图片文件保存到OSS中，返回图片文件在OSS上的路径
-            InputStream inputStream1 = file.getInputStream();
-            String imageUrL = aliyunOssUtil.uploadOriginImage(userName, imageName, inputStream1, CannedAccessControlList.PublicRead, null);
-            inputStream1.close();
-
-            // 图片压缩，用于缩略图展示
-            InputStream inputStream2 = file.getInputStream();
-            String compressUrL = aliyunOssUtil.uploadCompressImage(userName, imageName, (float)imageSize, inputStream2, CannedAccessControlList.PublicRead, null);
-            inputStream2.close();
-
-            // 创建Image对象，并加入到列表中
-            imageList.add(new Image(null, imageName, imageSize, imgSite, imgDesc, imageUrL, compressUrL, imageDate));
-        }
+        List<Image> imageList = handleImageUpload(multipartFiles, userName, imgSite, imgDesc);
 
         // 设置标签数量
         int labelCount = resNumber == null ? 1 : resNumber;
@@ -193,6 +151,54 @@ public class ImageController {
         return json;
     }
 
+    /**
+     * 处理上传图片的逻辑，返回处理后的图片对象列表
+     *
+     * @param multipartFiles 上传的文件
+     * @param userName 用户名
+     * @param imgSite 拍摄地点
+     * @param imgDesc 图片描述
+     * @return 上传后的图片信息列表
+     * @throws IOException
+     */
+    private List<Image> handleImageUpload(MultipartFile[] multipartFiles, String userName, String imgSite, String imgDesc)
+        throws Exception {
+        List<Image> imageList = new ArrayList<>();
+
+        for (MultipartFile file : multipartFiles) {
+            String imageName = file.getOriginalFilename();
+            long imageSize = file.getSize();
+
+            // 读取图片时间
+            InputStream inputStream = file.getInputStream();
+            Date imageDate = exifUtil.getImageDate(inputStream);
+            inputStream.close();
+            if (imageDate == null) {
+                imageDate = new Date();
+            }
+
+            // 原图上传
+            InputStream inputStream1 = file.getInputStream();
+            String imageUrl = aliyunOssUtil.uploadOriginImage(userName, imageName, inputStream1, CannedAccessControlList.PublicRead, null);
+            inputStream1.close();
+
+            // 压缩图上传
+            InputStream inputStream2 = file.getInputStream();
+            String compressUrl = aliyunOssUtil.uploadCompressImage(userName, imageName, (float) imageSize, inputStream2, CannedAccessControlList.PublicRead, null);
+            inputStream2.close();
+
+            imageList.add(new Image(null, imageName, imageSize, imgSite, imgDesc, imageUrl, compressUrl, imageDate));
+        }
+
+        return imageList;
+    }
+
+    /**
+     * 查询当前用户的所有图片的时间和类型信息
+     *
+     * @param token 用户身份令牌
+     * @return JSON 包含时间和类型信息
+     */
     @RequestMapping("/selectTimeType")
     public JSONObject selectTimeType(String token) {
         JSONObject json = new JSONObject();
@@ -212,6 +218,14 @@ public class ImageController {
         return json;
     }
 
+    /**
+     * 查询所有图片（分页）
+     *
+     * @param token 用户身份令牌
+     * @param currentPage 当前页码
+     * @param pageSize 每页大小
+     * @return JSON 包含分页图片数据
+     */
     @RequestMapping("/selectAll")
     public JSONObject selectAllImage(String token, Integer currentPage, Integer pageSize) {
         JSONObject json = new JSONObject();
@@ -235,6 +249,15 @@ public class ImageController {
         return json;
     }
 
+    /**
+     * 查询某一类型的所有图片（分页）
+     *
+     * @param token 用户身份令牌
+     * @param imageType 图片类型
+     * @param currentPage 当前页码
+     * @param pageSize 每页数量
+     * @return JSON 包含图片列表
+     */
     @RequestMapping("/selectAllByType")
     public JSONObject selectAllImageByType(String token, String imageType, Integer currentPage, Integer pageSize) {
         JSONObject json = new JSONObject();
@@ -255,6 +278,16 @@ public class ImageController {
         return json;
     }
 
+    /**
+     * 按照时间查询所有图片（分页）
+     *
+     * @param token 用户身份令牌
+     * @param imageDate 图片日期（yyyy-MM-dd）
+     * @param currentPage 当前页码
+     * @param pageSize 每页大小
+     * @return JSON 包含图片信息
+     * @throws ParseException 日期解析异常
+     */
     @RequestMapping("/selectAllByTime")
     public JSONObject selectAllImageByTime(String token, String imageDate, Integer currentPage, Integer pageSize) throws ParseException {
         JSONObject json = new JSONObject();
@@ -278,6 +311,13 @@ public class ImageController {
         return json;
     }
 
+    /**
+     * 删除图片（支持批量删除）
+     *
+     * @param token 用户身份令牌
+     * @param imageIds 要删除的图片 ID 列表
+     * @return 删除结果状态
+     */
     @RequestMapping("/delete")
     public JSONObject deleteImage(String token, @RequestParam("imageId") List<Integer> imageIds) {
         JSONObject json = new JSONObject();

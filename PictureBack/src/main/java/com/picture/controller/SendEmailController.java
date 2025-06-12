@@ -18,6 +18,13 @@ public class SendEmailController {
     private int validTime;
     @Resource
     private SendEmailUtil se;
+
+    /**
+     * 向指定邮箱发送验证码，并将验证码缓存到 Redis。
+     *
+     * @param email 接收验证码的邮箱地址
+     * @return 返回操作结果字符串 "Success"
+     */
     @RequestMapping("/code")
     public String sendCode(@RequestParam("email")String email){
 

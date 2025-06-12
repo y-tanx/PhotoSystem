@@ -45,17 +45,20 @@ public interface AlbumMapper {
 
     /**
      * 根据相册id删除中间表
+     *
      * @param albumIds
      */
     void deleteAlbumImageByAlbum(@Param("list") List<Integer> albumIds);
     /**
      * 移除相册图片中间表
+     *
      * @param imageIds
      */
     void removeAlbumImage(int albumId,@Param("list") List<Integer> imageIds);
 
     /**
      * 根据id删除相册
+     *
      * @param albumIds
      */
     void deleteAlbum(@Param("list") List<Integer> albumIds);
@@ -63,6 +66,7 @@ public interface AlbumMapper {
 
     /**
      * 当图片从相册中移除时，需要检查图片是否为相册封面
+     * 若图片是当前相册的封面，则需要设置相册封面为默认图片; 否则，不做更新
      *
      * @param defaultAlbum 默认相册封面
      * @param imgUrls 要删除的图片的URL
@@ -74,6 +78,7 @@ public interface AlbumMapper {
 
     /**
      * 查询用户相册部分信息
+     *
      * @param userId
      * @return
      */
@@ -85,6 +90,7 @@ public interface AlbumMapper {
 
     /**
      * 根据相册id查询所有图片
+     *
      * @param albumId
      * @return
      */
@@ -93,6 +99,7 @@ public interface AlbumMapper {
 
     /**
      * 根据相册id查询所有时间段
+     *
      * @param albumId
      * @return
      */

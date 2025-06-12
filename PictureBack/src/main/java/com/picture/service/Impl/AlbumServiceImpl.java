@@ -5,12 +5,10 @@ import com.picture.dao.AlbumMapper;
 import com.picture.dao.ImageMapper;
 import com.picture.domain.Album;
 import com.picture.domain.Image;
-import com.picture.domain.Operation;
 import com.picture.domain.VO.AlbumImageVO;
 import com.picture.domain.VO.PartAlbumVO;
 import com.picture.service.AlbumService;
 import com.picture.utils.DateUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +45,6 @@ public class AlbumServiceImpl implements AlbumService {
         album.setAlbumImg(defaultAlbum);
         album.setUserId(userId);
         album.setAlbumName(albumName);
-        System.out.println(album);
 
         // 将相册信息写入数据库
         albumMapper.addAlbum(album);

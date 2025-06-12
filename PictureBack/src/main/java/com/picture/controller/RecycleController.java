@@ -24,6 +24,12 @@ public class RecycleController {
     @Resource
     TokenUtil tokenUtil;
 
+    /**
+     * 查询当前用户回收站中的所有图片信息。
+     *
+     * @param token 用户身份验证令牌
+     * @return 包含图片信息的 JSON 对象，若 token 无效返回 fail 状态
+     */
     @RequestMapping("/selectAll")
     public JSONObject selectAll(String token) {
         JSONObject json = new JSONObject();
@@ -41,6 +47,13 @@ public class RecycleController {
         return json;
     }
 
+    /**
+     * 将回收站中的图片恢复至正常状态。
+     *
+     * @param token   用户身份验证令牌
+     * @param imageId 要恢复的图片 ID 列表
+     * @return 操作结果的 JSON 对象
+     */
     @RequestMapping("/recoverImage")
     public JSONObject recoverImage(String token, @RequestParam("imageId")List<Integer> imageId) {
         JSONObject json = new JSONObject();
@@ -56,6 +69,13 @@ public class RecycleController {
         return json;
     }
 
+    /**
+     * 永久删除回收站中的图片。
+     *
+     * @param token   用户身份验证令牌
+     * @param imageId 要删除的图片 ID 列表
+     * @return 操作结果的 JSON 对象
+     */
     @RequestMapping("/deleteImage")
     public JSONObject deleteImage(String token, @RequestParam("imageId")List<Integer> imageId) {
         JSONObject json = new JSONObject();

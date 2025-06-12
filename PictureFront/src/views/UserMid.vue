@@ -7,7 +7,6 @@
       </div>
       <div class="sleft-UserName">
         <h2>{{ user.userName }}</h2>
-        <h3>编辑个人签名</h3>
       </div>
       <el-divider></el-divider>
       <div class="sleft-iteam">

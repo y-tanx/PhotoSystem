@@ -2,19 +2,23 @@ package com.picture.utils;
 
 import com.picture.domain.User;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 
 @SpringBootTest
 class TokenUtilTest {
+
+    private static final Logger log = LoggerFactory.getLogger(TokenUtilTest.class);
     @Resource
     private TokenUtil tokenUtil;
 
     @Test
     void createToken() {
         String token = tokenUtil.createToken("myc".toString(), 1);
-        System.out.println(token);
+        log.info(token);
     }
 
     @Test

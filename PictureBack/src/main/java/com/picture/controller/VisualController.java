@@ -19,10 +19,11 @@ public class VisualController {
     private TokenUtil tokenUtil;
 
     /**
-     * 查询用户所有图片的类别和地址信息
+     * 查询当前用户所有图片的分类信息与地理位置信息。
+     * 返回的数据适用于图表展示，如分类统计图和地图分布图。
      *
-     * @param token
-     * @return
+     * @param token 用户身份令牌，用于身份验证
+     * @return 包含状态码和 VisualDataVO 数据的 JSON 对象
      */
     @RequestMapping("/selectTypeSite")
     public JSONObject selectTypeSite(String token) {
@@ -42,6 +43,12 @@ public class VisualController {
         return json;
     }
 
+    /**
+     * 查询当前用户所有图片的详细信息，用于前端可视化展示。
+     *
+     * @param token 用户身份令牌，用于身份验证
+     * @return 包含状态码 和 图片信息数据的 JSON 对象
+     */
     @RequestMapping("/selectImageInfo")
     public JSONObject selectImageInfo(String token) {
         JSONObject json = new JSONObject();

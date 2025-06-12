@@ -33,8 +33,10 @@ public class UserController {
     //默认头像
     private String defaultAvatar = "https://myc-picture.oss-cn-beijing.aliyuncs.com/image/avatar/avatar.jpg";
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     /**
      * 用户注册
+     *
      * @param userName 用户名
      * @param passWord 密码
      * @param email 邮箱地址
@@ -59,17 +61,18 @@ public class UserController {
         jsonObject.put("status","success");
         return jsonObject;
     }
+
     /**
      * 用户登录
+     *
      * @param userName
      * @param passWord
-     * @return
+     * @return 登录JSON结果
      */
     @RequestMapping("/login")
     public ResultMessage loginUser(String userName, String passWord) {
         User user = new User(userName, passWord);
 
-        System.out.println("password:"+passWord);
         Integer userId = userService.selectUserId(user);
         if(userId==null){
             return ResultMessage.fail(401, "账户密码错误！");
@@ -79,8 +82,10 @@ public class UserController {
             return ResultMessage.success(200,"登录成功!",token);
         }
     }
+
     /**
      * 查询当前登录用户的信息
+     *
      * @param token 用户 token
      * @return 用户信息（包含 token）
      */
@@ -107,8 +112,10 @@ public class UserController {
         }
         return jsonObject;
     }
+
     /**
      * 更新用户信息（性别、邮箱、电话、城市、生日）
+     *
      * @param token 用户 token
      * @param sex 性别
      * @param email 邮箱
@@ -136,6 +143,16 @@ public class UserController {
         return jsonObject;
     }
 
+    /**
+     * 重置用户密码接口。
+     * 该接口通过邮箱验证码验证身份后，允许用户根据用户名重设密码。
+     *
+     * @param userName   用户名，用于定位账户
+     * @param password   新密码，将替换原有密码
+     * @param email      用户注册绑定的邮箱地址，用于接收验证码
+     * @param codeNumber 用户输入的验证码，用于验证身份
+     * @return 返回 JSON 对象，标识处理结果
+     */
     @RequestMapping("/resetPassword")
     public JSONObject resetPassword(@RequestParam("username") String userName, String password, String email, String codeNumber){
         JSONObject jsonObject = new JSONObject();
@@ -164,8 +181,10 @@ public class UserController {
         }
         return jsonObject;
     }
+
     /**
      * 更新用户头像
+     *
      * @param token 用户 token
      * @param multipartFile 上传的头像文件
      * @return 上传结果
@@ -196,5 +215,4 @@ public class UserController {
         jsonObject.put("status", "success");
         return jsonObject;
     }
-
 }

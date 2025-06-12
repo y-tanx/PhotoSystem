@@ -3,7 +3,6 @@ package com.picture.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.imagerecog20190930.Client;
 import com.aliyun.imagerecog20190930.models.TaggingImageAdvanceRequest;
-import com.aliyun.imagerecog20190930.models.TaggingImageRequest;
 import com.aliyun.imagerecog20190930.models.TaggingImageResponse;
 import com.aliyun.oss.ClientConfiguration;
 import com.aliyun.oss.OSSClient;
@@ -13,7 +12,6 @@ import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.DeleteObjectsRequest;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectRequest;
-import com.aliyun.oss.model.PutObjectResult;
 import com.aliyun.tea.TeaException;
 import com.aliyun.teaopenapi.models.Config;
 import com.aliyun.teautil.models.RuntimeOptions;
@@ -22,7 +20,6 @@ import com.google.gson.reflect.TypeToken;
 import com.picture.domain.VO.AIResultVO;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -53,6 +50,9 @@ public class AliyunOssUtil {
 
   private static OSSClient ossClient;
 
+  /**
+   * 创建oss客户端，用于连接OSS
+   */
   private synchronized void createOssClient() {
     if(ossClient == null) {
       DefaultCredentialProvider defaultCredentialProvider = new DefaultCredentialProvider(accessKeyId, accessKeySecret);
@@ -61,6 +61,11 @@ public class AliyunOssUtil {
     }
   }
 
+  /**
+   * 获取OSS客户端对象
+   *
+   * @return OSS客户端对象
+   */
   private OSSClient getOssClient() {
     if(ossClient == null) {
       createOssClient();
@@ -68,6 +73,16 @@ public class AliyunOssUtil {
     return ossClient;
   }
 
+  /**
+   * 上传原图文件到 OSS
+   *
+   * @param userName 用户名
+   * @param imageName 原始文件名
+   * @param inputStream 文件输入流
+   * @param acl 访问权限（如公共读）
+   * @param callback 上传完成回调（可为空）
+   * @return 上传后的 OSS URL
+   */
   public String uploadOriginImage(String userName, String imageName , InputStream inputStream, CannedAccessControlList acl, Callback callback) throws Exception {
     String suffix = imageName.substring(imageName.lastIndexOf("."));
     String key = generateOssKey("origin", userName, suffix);
@@ -76,6 +91,17 @@ public class AliyunOssUtil {
 
   }
 
+  /**
+   * 压缩图片，并将压缩图上传到 OSS
+   *
+   * @param userName 用户名
+   * @param imageName 文件名
+   * @param imgSize 原图大小
+   * @param inputStream 原图输入流
+   * @param acl OSS访问权限
+   * @param callback 上传回调（可选）
+   * @return 上传后 OSS 的 URL
+   */
   public String uploadCompressImage(String userName, String imageName, Float imgSize, InputStream inputStream, CannedAccessControlList acl, Callback callback) throws Exception {
     // 判断压缩比率
     float imgRate = (imgSize < minSize) ? 1.0f : ((imgSize > limitSize) ? (limitSize / imgSize) : 0.9f);
@@ -107,6 +133,11 @@ public class AliyunOssUtil {
     }
   }
 
+  /**
+   * 删除 OSS 上的多张图片
+   *
+   * @param imageUrls 图片的完整 URL 列表
+   */
   public void deleteImages(List<String> imageUrls) {
     if(imageUrls == null || imageUrls.size() == 0 || imageUrls.size() > 1000) {
       log.error("删除出错，检查传入的删除列表!");
@@ -156,14 +187,20 @@ public class AliyunOssUtil {
       return result;
     }catch (TeaException teaException){
       // 获取整体报错信息。
-      System.out.println(com.aliyun.teautil.Common.toJSONString(teaException));
+      log.error(com.aliyun.teautil.Common.toJSONString(teaException));
       // 获取单个字段。
-      System.out.println(teaException.getCode());
+      log.error(teaException.getCode());
 
       return null;
     }
   }
 
+  /**
+   * 从 URL 中提取 OSS key，即图片在OSS上的路径
+   *
+   * @param imageUrLs 完整 URL 列表
+   * @return OSS key 列表
+   */
   private List<String> getImageKeys(List<String> imageUrLs) {
     List<String> imageKeys = new ArrayList<String>();
     for(String imageUrL : imageUrLs) {
@@ -175,6 +212,15 @@ public class AliyunOssUtil {
     return imageKeys;
   }
 
+  /**
+   * 上传文件流到 OSS，并返回图片的网络地址
+   *
+   * @param key OSS 文件路径 key
+   * @param inputStream 文件流
+   * @param acl 访问控制权限
+   * @param callback 上传回调
+   * @return OSS 文件访问地址
+   */
   private String uploadInputStreamFile(String key, InputStream inputStream, CannedAccessControlList acl, Callback callback) throws Exception {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, inputStream);
     ObjectMetadata metadata = new ObjectMetadata();
@@ -191,11 +237,15 @@ public class AliyunOssUtil {
     return "https://" + bucket + "." + endPoint + "/" + key;
   }
 
+  /**
+   * 生成 OSS 文件存储路径
+   *
+   * @param imageType 图片类型（origin/compress）
+   * @param userName 用户名
+   * @param fileSuffix 文件后缀（.jpg/.png等）
+   * @return 构造后的 OSS key
+   */
   private String generateOssKey(String imageType, String userName, String fileSuffix) {
-    // imageType: original 或 compress
-    // userId: 当前用户 ID
-    // fileSuffix: 如 ".jpg"、".png" 等
-
     String uuid = UUID.randomUUID().toString().replaceAll("-", ""); // 保证唯一性
     return String.format("%s%s/%s/%s%s", imgPath, imageType, userName, uuid, fileSuffix);
   }

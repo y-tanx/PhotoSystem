@@ -4,24 +4,28 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface UserService {
+
     /**
      * 注册用户
      * @param user
      * @return
      */
     Integer addUser(User user);
+
     /**
      * 用户登录
      * @param user
      * @return
      */
     Integer selectUserId(User user);
+
     /**
      * 查询用户资料
      * @param id
      * @return
      */
     User selectUserById(int id);
+
     /**
      * 修改用户资料
      * @param user

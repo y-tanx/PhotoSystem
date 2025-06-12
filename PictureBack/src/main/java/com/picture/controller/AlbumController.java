@@ -26,6 +26,12 @@ public class AlbumController {
     @Resource
     RedisUtil redisUtil;
 
+    /**
+     * 获取当前用户的所有相册（用于下拉选择）。
+     *
+     * @param token 用户身份验证令牌
+     * @return 包含相册信息的 JSON 对象
+     */
     @RequestMapping("/selectAlbumName") // 定义具体接口路径
     // 当前端发起请求访问/album/addAlbum这个地址时，就会执行该方法
     public JSONObject selectAlbumName(String token){
@@ -41,6 +47,15 @@ public class AlbumController {
         return jsonObject;
     }
 
+    /**
+     * 向指定相册中添加图片。
+     *
+     * @param req     请求对象
+     * @param token   用户身份验证令牌
+     * @param imageId 要添加的图片 ID 列表
+     * @param albumId 目标相册 ID
+     * @return 添加结果的 JSON 对象
+     */
     @RequestMapping("/addImageToAlbum")
     public JSONObject addImageToAlbum(HttpServletRequest req, String token, @RequestParam("imageId") List<Integer> imageId, Integer albumId ){
         JSONObject jsonObject = new JSONObject();
@@ -54,6 +69,15 @@ public class AlbumController {
         return jsonObject;
     }
 
+    /**
+     * 从相册中移除图片。
+     *
+     * @param req     请求对象
+     * @param token   用户身份验证令牌
+     * @param imageId 要移除的图片 ID 列表
+     * @param albumId 相册 ID
+     * @return 移除结果的 JSON 对象
+     */
     @RequestMapping("/removeImageFromAlbum")
     public JSONObject removeImageFromAlbum(HttpServletRequest req, String token, @RequestParam("imageId") List<Integer> imageId, Integer albumId ){
         JSONObject jsonObject = new JSONObject();
@@ -67,6 +91,14 @@ public class AlbumController {
         return jsonObject;
     }
 
+    /**
+     * 创建新的相册。
+     *
+     * @param req       请求对象
+     * @param token     用户身份验证令牌
+     * @param albumName 相册名称
+     * @return 创建结果的 JSON 对象
+     */
     @RequestMapping("/addAlbum")
     public JSONObject addAlbum(HttpServletRequest req,String token,String albumName){
         JSONObject jsonObject = new JSONObject();
@@ -89,6 +121,14 @@ public class AlbumController {
         return jsonObject;
     }
 
+    /**
+     * 删除指定 ID 的多个相册。
+     *
+     * @param req      请求对象
+     * @param token    用户身份验证令牌
+     * @param albumIds 相册 ID 列表
+     * @return 删除结果的 JSON 对象
+     */
     @RequestMapping("/deleteAlbumByIds")
     public JSONObject deleteAlbumByIds(HttpServletRequest req,String token,@RequestParam("albumIds")List<Integer> albumIds){
         JSONObject jsonObject = new JSONObject();
@@ -102,6 +142,15 @@ public class AlbumController {
 
         return jsonObject;
     }
+
+    /**
+     * 查询某个相册内的所有图片。
+     *
+     * @param token   用户身份验证令牌
+     * @param albumId 相册 ID
+     * @return 包含图片列表的 JSON 对象
+     * @throws ParseException 解析异常
+     */
     @RequestMapping("/selectAllImage")
     public JSONObject selectAllImage(String token,Integer albumId) throws ParseException {
         JSONObject jsonObject = new JSONObject();
@@ -114,11 +163,19 @@ public class AlbumController {
 
         jsonObject.put("status","success");
         jsonObject.put("data",res);
-        System.out.println(res);
 
         return jsonObject;
     }
 
+    /**
+     * 设置相册封面图像。
+     *
+     * @param token   用户身份验证令牌
+     * @param albumId 相册 ID
+     * @param imageId 图片 ID
+     * @return 设置结果的 JSON 对象
+     * @throws ParseException 解析异常
+     */
     @RequestMapping("/setAlbumCover")
     public JSONObject setAlbumCover(String token,Integer albumId,Integer imageId) throws ParseException {
         JSONObject jsonObject = new JSONObject();
@@ -130,29 +187,6 @@ public class AlbumController {
 
         albumService.setAlbumCover(albumId,imageId);
         jsonObject.put("status","success");
-        return jsonObject;
-    }
-
-    @RequestMapping("/share")
-    public JSONObject shareAlbum(String token,Integer albumId,Integer shareDay) throws ParseException {
-        JSONObject jsonObject = new JSONObject();
-        User user = tokenUtil.jwtParser(token);
-        if(user==null){
-            jsonObject.put("status","fail");
-            return jsonObject;
-        }
-        if(shareDay == 0){
-            shareDay = 9999*24*60*60;
-        }
-        else{
-            shareDay = shareDay*24*60*60;
-        }
-
-        String shareInfo = user.getUserId()+","+albumId;
-        String md5 = DigestUtils.md5Hex(shareInfo);
-
-        redisUtil.set(md5,shareInfo,shareDay);
-        jsonObject.put("UrL","?code="+md5);
         return jsonObject;
     }
 }
