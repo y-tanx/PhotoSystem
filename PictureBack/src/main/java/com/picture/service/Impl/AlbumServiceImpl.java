@@ -28,7 +28,7 @@ public class AlbumServiceImpl implements AlbumService {
     DateUtil dateUtil;
 
     // 默认相册封面图片路径
-    private String defaultAlbum = "/static/album/albumImg.png";
+    private String defaultAlbum = "https://myc-picture.oss-cn-beijing.aliyuncs.com/image/avatar/albumImage.png";
 
     @Override
     @Transactional(rollbackFor = Exception.class)   // 事务注解: 在方法执行时，Spring会开启一个数据库事务

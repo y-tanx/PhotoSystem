@@ -9,7 +9,7 @@ import com.picture.domain.Image;
 import com.picture.domain.Recycle;
 import com.picture.domain.VO.RecycleVO;
 import com.picture.service.RecycleService;
-import com.picture.utils.FileServerUtil;
+import com.picture.utils.AliyunOssUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +28,7 @@ public class RecycleServiceImpl implements RecycleService {
     @Resource
     private ImageMapper imageMapper;
     @Resource
-    private FileServerUtil fileServerUtil;
+    private AliyunOssUtil aliyunOssUtil;
 
     @Override
     public JSONObject selectAll(Integer userId) {
@@ -75,11 +75,13 @@ public class RecycleServiceImpl implements RecycleService {
         // 从album-image表中删除
         albumMapper.deleteAlbumImageByImgId(imageIds);
 
-        // 从磁盘中删除图片
-        for(Image image : images){
-            fileServerUtil.deleteServe(image.getImageUrL());
-            fileServerUtil.deleteServe(image.getCompressUrL());
+        // 从OSS中删除图片
+        List<String> imageURLs = new ArrayList<>();
+        for (Image image : images) {
+            imageURLs.add(image.getImageUrL());
+            imageURLs.add(image.getCompressUrL());
         }
+        aliyunOssUtil.deleteImages(imageURLs);
     }
 
     @Override

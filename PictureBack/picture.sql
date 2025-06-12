@@ -14,7 +14,7 @@ CREATE TABLE `album`
     `albumName`       varchar(30)  DEFAULT NULL,
     `albumTheme`      varchar(50)  DEFAULT NULL,
     `albumContext`    text,
-    `albumImg`        varchar(100) DEFAULT '/static/album/albumImg.png',
+    `albumImg`        varchar(120) DEFAULT 'https://myc-picture.oss-cn-beijing.aliyuncs.com/image/avatar/albumImage.png',
     `backgroundImage` varchar(100) DEFAULT NULL,
     `albumMusic`      varchar(100) DEFAULT NULL,
     `userId`          int          DEFAULT NULL,
@@ -67,22 +67,6 @@ CREATE TABLE `image_type`
 ) ENGINE=InnoDB AUTO_INCREMENT=352 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
--- Table structure for record
--- ----------------------------
-DROP TABLE IF EXISTS `record`;
-CREATE TABLE `record`
-(
-    `id`        int NOT NULL AUTO_INCREMENT,
-    `date`      datetime    DEFAULT NULL,
-    `operation` varchar(30) DEFAULT NULL,
-    `number`    int         DEFAULT NULL,
-    `ipv4`      varchar(50) DEFAULT NULL,
-    `userId`    int         DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `record_id_uindex` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- ----------------------------
 -- Table structure for recycle
 -- ----------------------------
 DROP TABLE IF EXISTS `recycle`;
@@ -111,7 +95,7 @@ CREATE TABLE `user`
     `city`     varchar(25)  DEFAULT NULL,
     `birthday` date         DEFAULT NULL,
     `capacity` int          DEFAULT '1000',
-    `avatar`   varchar(100) DEFAULT '/static/avatar/default.jpg',
+    `avatar`   varchar(120) DEFAULT 'https://myc-picture.oss-cn-beijing.aliyuncs.com/image/avatar/avatar.jpg',
     UNIQUE KEY `user_id_uindex` (`id`),
     UNIQUE KEY `user_userName_uindex` (`userName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

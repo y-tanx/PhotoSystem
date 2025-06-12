@@ -86,8 +86,6 @@ public class AlbumController {
                 jsonObject.put("status","fail");
             }
         }
-//        albumService.addAlbum(req,albumName,user.getUserId());
-//        jsonObject.put("status","success");
         return jsonObject;
     }
 

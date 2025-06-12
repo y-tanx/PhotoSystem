@@ -41,10 +41,6 @@ mybatis:
   type-aliases-package: com.picture.domain
   mapper-locations: classpath:/mapper/**/*.xml
 
-file:
-  upload:
-    imgPath: D:/Project/PictureStorage/
-
 pagehelper:
   helper-dialect: mysql
   reasonable: true
