@@ -117,6 +117,18 @@ export default {
   },
   methods: {
     SubmitImage() {
+      // 判断所有要提交的字段是否都为空
+      if (
+          !this.form.email &&
+          !this.form.phone &&
+          !this.form.resion &&
+          !this.form.date &&
+          !this.form.sex
+      ) {
+        this.$message.error('用户资料修改为空');
+        return;  // 阻止后续提交操作
+      }
+
       var _this = this;
       const formData = new FormData();
       formData.append('token', this.token);

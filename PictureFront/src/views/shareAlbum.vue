@@ -48,7 +48,7 @@
                 </el-checkbox>
               </el-checkbox-group>
               <!-- serveUrL + -->
-              <el-image :src="serveUrL + item.compressUrL" :preview-src-list="getSrcList(i, j)" class="image" lazy>
+              <el-image :src="item.compressUrL" :preview-src-list="getSrcList(i, j)" class="image" lazy>
                 <div slot="placeholder" class="image-slot" style="margin-top:3em">
                   <svg-icon icon-file-name="loading" style="vertical-align:-5px">
                   </svg-icon>加载中
@@ -150,9 +150,9 @@
           if (resp.data.status == "success") {
             _this.images = resp.data.data.images;
             _this.previewImageUrL = resp.data.data.previewImageUrL;
-            for (var i = 0; i < _this.previewImageUrL.length; i++) {
-              _this.previewImageUrL[i] = _this.serveUrL + _this.previewImageUrL[i]
-            }
+            // for (var i = 0; i < _this.previewImageUrL.length; i++) {
+            //   _this.previewImageUrL[i] = _this.serveUrL + _this.previewImageUrL[i]
+            // }
             _this.isRouterAlive = !_this.isRouterAlive;
             //判断当前页面数据是否为空
             if (_this.images.length < 1) {

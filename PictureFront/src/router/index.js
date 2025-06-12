@@ -88,14 +88,6 @@ const routes = [
         },
       },
       {
-        path: '/record',
-        name: 'record',
-        component: () => import('@/views/Record'),
-        meta: {
-          Required: true
-        },
-      },
-      {
         path: '/AIupload',
         name: 'AIupload',
         component: () => import('@/views/AIupload'),

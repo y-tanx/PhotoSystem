@@ -35,7 +35,7 @@
           </el-checkbox>
         </el-checkbox-group>
         <!-- serveUrL + -->
-        <el-image :src="serveUrL + item.compressUrL" :preview-src-list="getSrcList(index)" class="image">
+        <el-image :src="item.compressUrL" :preview-src-list="getSrcList(index)" class="image">
           <div slot="placeholder" class="image-slot" style="margin-top:3em">
             <svg-icon icon-file-name="loading" style="vertical-align:-5px">
             </svg-icon>加载中
@@ -196,9 +196,9 @@ export default {
         if (resp.data.status == "success") {
           _this.images = resp.data.data.images;
           _this.previewImageUrL = resp.data.data.previewImageUrL;
-          for (var i = 0; i < _this.previewImageUrL.length; i++) {
-            _this.previewImageUrL[i] = _this.serveUrL + _this.previewImageUrL[i]
-          }
+          // for (var i = 0; i < _this.previewImageUrL.length; i++) {
+          //   _this.previewImageUrL[i] = _this.serveUrL + _this.previewImageUrL[i]
+          // }
           console.log(_this.images.length);
 
           //判断当前页面数据是否为空

@@ -60,6 +60,18 @@ public interface AlbumMapper {
      */
     void deleteAlbum(@Param("list") List<Integer> albumIds);
 
+
+    /**
+     * 当图片从相册中移除时，需要检查图片是否为相册封面
+     *
+     * @param defaultAlbum 默认相册封面
+     * @param imgUrls 要删除的图片的URL
+     * @param albumId  相册Id
+     */
+    void updateAlbumCoverIfRemoved(@Param("defaultAlbum") String defaultAlbum,
+        @Param("imgUrls") List<String> imgUrls,
+        @Param("albumId") Integer albumId);
+
     /**
      * 查询用户相册部分信息
      * @param userId

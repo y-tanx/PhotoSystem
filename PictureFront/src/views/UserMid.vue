@@ -3,7 +3,7 @@
     <div class="sleft-aside">
       <h1>个人信息</h1>
       <div class="sleft-avatar">
-        <a-avatar :size="ImgSize" :src="serveUrL + user.avatar" class="savatar-son" />
+        <a-avatar :size="ImgSize" :src="user.avatar" class="savatar-son" />
       </div>
       <div class="sleft-UserName">
         <h2>{{ user.userName }}</h2>

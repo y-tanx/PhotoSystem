@@ -5,7 +5,6 @@ import com.aliyun.oss.model.CannedAccessControlList;
 import com.picture.common.ResultMessage;
 import com.picture.utils.AliyunOssUtil;
 import java.io.InputStream;
-import java.util.Arrays;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.picture.domain.User;
 import com.picture.service.UserService;
@@ -184,9 +183,6 @@ public class UserController {
         String userName = user.getUserName();
         String imageName = multipartFile.getOriginalFilename();
         Long imageSize = multipartFile.getSize();
-
-        // 先删除原来头像
-        aliyunOssUtil.deleteImages(Arrays.asList(user.getAvatar()));
 
         // 上传用户新头像
         InputStream inputStream = multipartFile.getInputStream();

@@ -39,7 +39,7 @@ public interface AlbumService {
      * @param imageId 图片 ID 列表
      * @param userId  用户 ID
      */
-    void removeImageToAlbum(HttpServletRequest req,Integer albumId, List<Integer> imageId,Integer userId);
+    void removeImageFromAlbum(HttpServletRequest req,Integer albumId, List<Integer> imageId,Integer userId);
     /**
      * 将图片添加到相册，并记录操作日志
      *

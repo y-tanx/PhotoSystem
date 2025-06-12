@@ -117,7 +117,7 @@
 
           <a-dropdown style="float:right ; margin-right:25px">
             <a class="ant-dropdown-link" @click="e => e.preventDefault()">
-              <a-avatar :size="36" :src="serveUrL+user.avatar" /><span
+              <a-avatar :size="36" :src="user.avatar" /><span
                 style="margin:18px ;font-size:18px ;margin-top:5px">{{
                 user.userName
                 }}</span>
@@ -199,7 +199,7 @@ export default {
   methods: {
     RecoverFocus() {
       // 使刷新后蓝色焦点选中路由对应的item
-      var paths = ['/Home', '/Album', '/Recycle', '/Record', '', '/VisualdataType', '/VisualdataSite', '', '/upload', '/AIUpload', '', '/UserMid', '/UserSet'];
+      var paths = ['/Home', '/Album', '/Recycle', '', '/VisualdataType', '/VisualdataSite', '', '/upload', '/AIUpload', '', '/UserMid', '/UserSet'];
       var path = this.$route.path;
       var i = 0;
       for (; i < paths.length; i++) {

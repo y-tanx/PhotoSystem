@@ -2,6 +2,7 @@ package com.picture.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.picture.dao.AlbumMapper;
+import com.picture.dao.ImageMapper;
 import com.picture.domain.Album;
 import com.picture.domain.Image;
 import com.picture.domain.Operation;
@@ -9,6 +10,7 @@ import com.picture.domain.VO.AlbumImageVO;
 import com.picture.domain.VO.PartAlbumVO;
 import com.picture.service.AlbumService;
 import com.picture.utils.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +25,11 @@ import java.util.List;
 @Service
 public class AlbumServiceImpl implements AlbumService {
     @Resource
-    AlbumMapper albumMapper;
+    private AlbumMapper albumMapper;
     @Resource
-    DateUtil dateUtil;
+    private DateUtil dateUtil;
+    @Resource
+    private ImageMapper imageMapper;
 
     // 默认相册封面图片路径
     private String defaultAlbum = "https://myc-picture.oss-cn-beijing.aliyuncs.com/image/avatar/albumImage.png";
@@ -70,15 +74,18 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public void removeImageToAlbum(HttpServletRequest req,Integer albumId, List<Integer> imageId,Integer userId) {
-        System.out.println(albumId);
-        System.out.println(imageId);
+    public void removeImageFromAlbum(HttpServletRequest req,Integer albumId, List<Integer> imageId,Integer userId) {
+        // 收集所有图片的CompressUrl
+        List<Image> images = imageMapper.selectImageByIds(imageId);
+        List<String> imgUrls = new ArrayList<>();
+        for(Image image : images){
+            imgUrls.add(image.getCompressUrL());
+        }
+        // 更新相册封面
+        albumMapper.updateAlbumCoverIfRemoved(defaultAlbum, imgUrls, albumId);
 
         // 删除相册中指定的照片
         albumMapper.removeAlbumImage(albumId,imageId);
-
-        // 获取相册名称，用于日志记录
-        String albumName = albumMapper.selectAlbum(albumId);
     }
 
     @Override

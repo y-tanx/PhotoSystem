@@ -52,7 +52,6 @@
       <div id="qrcode" ref="qrcode" style="overflow:hidden;margin-left:65px;text-align: center;">
         
       </div>
-      <p style="margin:2px">手机扫码查看/<a @click="saveQRCode()">保存二维码</a></p>
 <!--  图片显示，增加弹窗 -->
     </el-dialog>
     <div id="album-content" :style="empty1">
@@ -83,7 +82,7 @@
 
               <!-- 图片组件 -->
               <el-image
-                  :src="serveUrL + item.compressUrL"
+                  :src="item.compressUrL"
                   :preview-src-list="getSrcList(i, j)"
                   class="image"
                   lazy
@@ -114,7 +113,7 @@
     <!-- 弹窗 -->
     <el-dialog :visible.sync="showDialog" width="400px" :before-close="closeDialog">
       <div v-if="selectedImage">
-        <img :src="serveUrL + selectedImage.compressUrL" alt="图片" style="width: 100%; margin-bottom: 10px;" />
+        <img :src="selectedImage.compressUrL" alt="图片" style="width: 100%; margin-bottom: 10px;" />
         <p><strong>拍摄地址：</strong> {{ selectedImage.imageSite }}</p>
         <p><strong>图片注释：</strong> {{ selectedImage.imageDesc }}</p>
       </div>
@@ -131,7 +130,6 @@
 </template>
 
 <script>
-import QRCode from 'qrcodejs2'
 export default {
   name: 'InsideAlbum',
   data() {
@@ -241,9 +239,9 @@ export default {
         if (resp.data.status == "success") {
           _this.images = resp.data.data.images;
           _this.previewImageUrL = resp.data.data.previewImageUrL;
-          for (var i = 0; i < _this.previewImageUrL.length; i++) {
-            _this.previewImageUrL[i] = _this.serveUrL + _this.previewImageUrL[i]
-          }
+          // for (var i = 0; i < _this.previewImageUrL.length; i++) {
+          //   _this.previewImageUrL[i] = _this.serveUrL + _this.previewImageUrL[i]
+          // }
           _this.isRouterAlive = !_this.isRouterAlive;
           //判断当前页面数据是否为空
           if (_this.images.length < 1) {
@@ -257,95 +255,7 @@ export default {
         }
       })
     },
-    // 获取服务端分享相册链接
-    getShareAlbumUrL(){
-      let _this = this;
-      const formData = new FormData();
-      formData.append('token', this.token);
-      formData.append('albumId',this.currentAlbumId);
-      formData.append('shareDay', this.shareRadio);
-      this.axios({
-        url: this.$serveUrL + "/album/share",
-        method: "post",
-        data: formData
-      }).then(function (resp) {
-        let cur = document.location.href;
-        let pathName =  _this.$route.path;
-        console.log(pathName)
-         let index =  cur.indexOf(pathName);
-        // 拼接分享链接
-        let url = cur.substring(0,index)+'/shareAlbum'+resp.data.UrL;
-        _this.shareAlbumUrL = url;
-        console.log(url)
-        _this.createQRCode();
-      })
-    },
-    // 分享相册
-    // shareAlbum() {
-    //   this.shareDialogVisible = true;
-    //   this.changeRadio();
-    // },
-    // 改变时间期限
-    changeRadio(){
-       this.getShareAlbumUrL();
-      // 重新生成二维码   
-    },
-    // 复制链接
-    copyUrL() {
-      let oInput = document.createElement('input');
-      // 将想要复制的值
-      oInput.value = this.shareAlbumUrL;
-      // // 页面底部追加输入框
-      document.body.appendChild(oInput);
-      // // 选中输入框
-      oInput.select();
-      // 执行浏览器复制命令
-      document.execCommand('Copy');
-      oInput.remove();
-      this.$message({
-        message: '相册分享链接复制成功',
-        type: 'success'
-      });
-    },
-    //生成二维码
-    createQRCode(){
-      this.$nextTick(function () {
-        let dom = document.getElementById("qrcode");
-        // 删除上一个节点
-        dom.innerHTML = '';
-        new QRCode(this.$refs.qrcode, {
-          text: this.shareAlbumUrL,//url地址  文本等需要转换为二维码的内容
-          width: 130,
-          height: 130,
-          colorDark: "#333333", //二维码颜色
-          colorLight: "#ffffff", //二维码背景色
-        });
-        if(this.shareRadio == 0){
-          this.$message({
-        message: '有效期为永久',
-        type: 'success'
-      });
-        }
-        else
-        this.$message({
-        message: '有效期为'+this.shareRadio+'天',
-        type: 'success'
-      });
-      });
-    },
-    // 保存二维码
-    saveQRCode() {
-      const link = document.createElement('a');
-      link.download = '《'+this.currentAlbumName+'》相册二维码.png';
-      link.style.display = 'none';
-      let imgURL = document.getElementById('qrcode').getElementsByTagName('canvas');
-   
-      link.href = imgURL[0].toDataURL('image/jpg');
-      document.body.appendChild(link);
-      link.click();
-      URL.revokeObjectURL(link.href); //释放URL对象
-      document.body.removeChild(link);
-    },
+
     setAlbumCover() {
       this.handleCheckIndexToId();
    
@@ -420,57 +330,64 @@ export default {
         })
       })
     },
-    downloadImage() {
-      var imgIndex = this.checkedImgIndex;
-      var str = imgIndex[0].split(',');
-      var count = 0
-      for (let i = 0; i < str[0]; i++) {
-        for (let j = 0; j < this.images[i].image.length; j++) {
-          count++;
-        }
+    async downloadImage() {
+      const imgIndex = this.checkedImgIndex;
+      if (!imgIndex.length) return;
+
+      let str = imgIndex[0].split(',');
+      let count = 0;
+      for (let i = 0; i < Number(str[0]); i++) {
+        count += this.images[i].image.length;
       }
-      count += parseInt(str[1]);//在previewImageUrL的位置,根据选中index排序完的顺序下载
+      count += Number(str[1]); // 根据选中index排序完的顺序下载
+
       for (let i = 0; i < imgIndex.length; i++) {
         str = imgIndex[i].split(',');
-        var imgUrl = this.previewImageUrL[count + i];
-        var imgName = this.images[str[0]].image[str[1]].imageName;
-        this.downloadPicture(imgUrl, imgName);
+        const outerIdx = Number(str[0]);
+        const innerIdx = Number(str[1]);
+
+        if (
+            !this.images[outerIdx] ||
+            !this.images[outerIdx].image ||
+            !this.images[outerIdx].image[innerIdx]
+        ) {
+          console.warn(`无效的图片索引: ${outerIdx}, ${innerIdx}`);
+          continue;
+        }
+
+        const imgUrl = this.previewImageUrL[count + i];
+        const imgName = this.images[outerIdx].image[innerIdx].imageName;
+
+        try {
+          await this.downloadPicture(imgUrl, imgName);
+          // 延时200ms，确保浏览器触发下载
+          await new Promise(resolve => setTimeout(resolve, 200));
+        } catch (err) {
+          this.$message.error(`下载图片失败: ${imgName}`);
+          console.error(err);
+        }
       }
-      this.handleCheckIndexToId();
-      var _this = this;
-      const formData = new FormData();
-      formData.append('token', this.token);
-      formData.append('number', this.checkedImgId.length);
-      this.axios({
-        url: this.$serveUrL + "/record/recordDownload",
-        method: "post",
-        data: formData
-      }).then(function (resp) {
-        if (resp.data.status == "success") {
-          _this.$message({
-            message: '图片下载成功！',
-            type: 'success'
-          });
-          _this.dialogTableVisible = false;
-        }
-        else {
-          1;
-        }
-      })
     },
+
     downloadPicture(imgSrc, name) {
-      // 根据url下载
-      fetch(imgSrc).then((res) => {
-        res.blob().then((blob) => {
-          const url = window.URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = name
-          a.click()
-          window.URL.revokeObjectURL(url)
-        })
-      })
+      return fetch(imgSrc)
+          .then(res => {
+            if (!res.ok) throw new Error('网络请求失败');
+            return res.blob();
+          })
+          .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+          });
     },
+
     // 关闭
 
 
@@ -571,9 +488,6 @@ export default {
       this.checkAll = this.checkedCount === this.images.length;
       this.isIndeterminate = this.checkedCount > 0 && this.checkedCount < this.images.length;
     },
-
-
-
   }
 
 }
@@ -661,10 +575,6 @@ export default {
 
   display: block;
 }
-
-/* .album-image-time:hover+.check-box {
-  display: block;
-} */
 
 .time-select {
   display: none;

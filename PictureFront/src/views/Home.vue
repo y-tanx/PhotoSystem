@@ -12,16 +12,6 @@
         <template slot="title">{{ timeTitle }}</template>
         <el-menu-item v-for="(item, index) in imageTimes" :key="index" :index="item">{{ item }}</el-menu-item>
       </el-submenu>
-
-      <el-menu-item index="search">
-        <el-select style="padding: 0px 20px" v-model="value" multiple filterable remote reserve-keyword
-          :placeholder="placeholder" :remote-method="remoteMethod" :loading="loading">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
-        </el-select>
-      </el-menu-item>
-
-      <el-menu-item >搜 索</el-menu-item>
     </el-menu>
 
     <!-- 选中菜单 -->
@@ -54,7 +44,7 @@
         <el-table-column property="albumImg" label="描述图片" width="180">
           <!-- 将图片添加到表格中 -->
           <template slot-scope="scope">
-            <img :src="serveUrL + scope.row.albumImg" style="height:5em;width:9em" />
+            <img :src="scope.row.albumImg" style="height:5em;width:9em" />
           </template>
         </el-table-column>
         <el-table-column property="albumName" label="相册名称">
@@ -144,9 +134,6 @@ export default {
   data() {
     return {
       
-      options: ['s', 's'],
-      value: ['游乐场'],
-      list: [],
       states: ["风景", "动物"],
       loading: false,
       token: '',  //token凭证
@@ -156,7 +143,6 @@ export default {
       timeTitle: '拍 摄 时 间',
       typeTitle: '图 片 类 别',
       arrPath: ['all'],   //存放当前菜单路径
-      placeholder: '请输入关键词查询图片',
       isRouterAlive: true,
 
       // 后端查询的图片数据
@@ -283,49 +269,40 @@ export default {
         }
       })
     },
-    downloadImage() {
-      var imgIndex = this.checkedImgIndex;
+    async downloadImage() {
+      const imgIndex = this.checkedImgIndex;
+
       for (let i = 0; i < imgIndex.length; i++) {
-        let imgUrl = this.previewImageUrL[imgIndex[i]];
-        let imgName = this.images[imgIndex[i]].imageName;
-        this.downloadPicture(imgUrl, imgName);
+        const idx = imgIndex[i];
+        const imgUrl = this.previewImageUrL[idx];
+        const imgName = this.images[idx].imageName;
+        await this.downloadPicture(imgUrl, imgName);
+        // 延时100ms，保证浏览器能触发下载
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
+
       this.handleCheckIndexToId();
-      var _this = this;
-      const formData = new FormData();
-      formData.append('token', this.token);
-      formData.append('number', this.checkedImgId.length);
-      this.axios({
-        url: this.$serveUrL + "/record/recordDownload",
-        method: "post",
-        data: formData
-      }).then(function (resp) {
-        if (resp.data.status == "success") {
-          _this.$message({
-            message: '图片下载成功！',
-            type: 'success'
-          });
-          _this.dialogTableVisible = false;
-        }
-        else {
-          1;
-        }
-      })
 
-
+      this.$message({
+        message: '图片下载成功！',
+        type: 'success'
+      });
+      this.dialogTableVisible = false;
     },
+
     downloadPicture(imgSrc, name) {
-      // 根据url下载
-      fetch(imgSrc).then((res) => {
-        res.blob().then((blob) => {
-          const url = window.URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = name
-          a.click()
-          window.URL.revokeObjectURL(url)
-        })
-      })
+      return new Promise((resolve) => {
+        const a = document.createElement('a');
+        a.href = imgSrc;
+        a.download = name;
+
+        // 触发点击下载
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        resolve();
+      });
     },
     deleteImage() {
       this.$confirm('此操作将删除所选图片, 是否继续?', '删除图片', {

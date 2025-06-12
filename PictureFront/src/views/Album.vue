@@ -48,7 +48,7 @@
                                 <el-checkbox :label="index">
                                 </el-checkbox>
                             </el-checkbox-group>
-                            <img class="album-el-img" :src="serveUrL + item.albumImg" @click="openAblum(index)"
+                            <img class="album-el-img" :src=" item.albumImg" @click="openAblum(index)"
                                 style="object-fit:cover">
                             <div class="album-el-txt">
                                 <span>{{ item.albumName }}</span>
@@ -71,7 +71,7 @@ export default {
             mainStyle: {
                 height: '500px',
             },
-            albumName: '好吃的汉堡',
+            albumName: '示例相册',
             ImageNumber: 100,
             resizeTimer: null,
             // 服务器url
@@ -80,8 +80,8 @@ export default {
             // 相册json数据
             albumData: [
                 {
-                    albumName: '美女',
-                    albumImg: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
+                    albumName: '相册',
+                    albumImg: 'https://myc-picture.oss-cn-beijing.aliyuncs.com/image/avatar/albumImage.png',
                     albumId: '',
                     imageNumber: 100,
                 }

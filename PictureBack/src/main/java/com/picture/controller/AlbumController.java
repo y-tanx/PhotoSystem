@@ -62,7 +62,7 @@ public class AlbumController {
             jsonObject.put("status","fail");
             return jsonObject;
         }
-        albumService.removeImageToAlbum(req,albumId,imageId,user.getUserId());
+        albumService.removeImageFromAlbum(req,albumId,imageId,user.getUserId());
         jsonObject.put("status","success");
         return jsonObject;
     }

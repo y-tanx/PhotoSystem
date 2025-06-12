@@ -73,9 +73,20 @@
 
         </foreach>
     </delete>
+
+    <update id="updateAlbumCoverIfRemoved" parameterType="map">
+        UPDATE album
+        SET albumImg = #{defaultAlbum}
+        WHERE id = #{albumId}
+        AND albumImg IN
+        <foreach collection="imgUrls" item="url" open="(" separator="," close=")">
+            #{url}
+        </foreach>
+    </update>
+
     <resultMap id="AlbumImageResultMap" type="com.picture.domain.VO.AlbumImageVO">
         <result column="imageDate" property="time" jdbcType="VARCHAR"/>
-        <collection property="images" resultMap="ImageResultMap"/>
+        <collection property="image" resultMap="ImageResultMap"/>
     </resultMap>
     <resultMap id="ImageResultMap" type="com.picture.domain.Image">
         <id column="any_value(id)" property="imageId" jdbcType="INTEGER"/>
