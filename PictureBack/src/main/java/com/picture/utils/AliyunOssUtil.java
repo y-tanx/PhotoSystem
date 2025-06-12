@@ -1,5 +1,10 @@
 package com.picture.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.imagerecog20190930.Client;
+import com.aliyun.imagerecog20190930.models.TaggingImageAdvanceRequest;
+import com.aliyun.imagerecog20190930.models.TaggingImageRequest;
+import com.aliyun.imagerecog20190930.models.TaggingImageResponse;
 import com.aliyun.oss.ClientConfiguration;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.common.auth.DefaultCredentialProvider;
@@ -9,10 +14,17 @@ import com.aliyun.oss.model.DeleteObjectsRequest;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
+import com.aliyun.tea.TeaException;
+import com.aliyun.teaopenapi.models.Config;
+import com.aliyun.teautil.models.RuntimeOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.picture.domain.VO.AIResultVO;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -102,6 +114,54 @@ public class AliyunOssUtil {
     List<String> keys = getImageKeys(imageUrls);
     DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucket).withKeys(keys);
     getOssClient().deleteObjects(deleteObjectsRequest);
+  }
+
+  /**
+   * 使用阿里云图像识别功能，为图像打标
+   * 参考: https://help.aliyun.com/zh/viapi/use-cases/general-image-marking-1?spm=a2c4g.11186623.0.0.621b5304H8OqzS
+   *
+   * @param imageCompressUrL 图片的本地文件路径
+   * @return 打标结果，包括标签和可信度
+   * @throws Exception
+   */
+  public List<AIResultVO> imageLabel(String imageCompressUrL) throws Exception {
+        /*
+          初始化配置对象com.aliyun.teaopenapi.models.Config
+          Config对象存放 AccessKeyId、AccessKeySecret、endpoint等配置
+          */
+    Config config = new Config() .setAccessKeyId(accessKeyId)
+        .setAccessKeySecret(accessKeySecret);
+
+    // 访问的域名
+    config.setEndpoint("imagerecog.cn-shanghai.aliyuncs.com");
+
+    // 创建Client
+    Client client = new Client(config);
+
+    // 使用网络URL
+    URL url = new URL(imageCompressUrL);
+    InputStream inputStream = url.openConnection().getInputStream();
+    TaggingImageAdvanceRequest taggingImageAdvanceRequest = new TaggingImageAdvanceRequest()
+        .setImageURLObject(inputStream);
+    RuntimeOptions runtime = new RuntimeOptions();
+
+    try {
+      // 获得json格式的识别结果
+      TaggingImageResponse taggingImageResponse = client.taggingImageAdvance(taggingImageAdvanceRequest, runtime);
+
+      // 将json转换为实体对象
+      Gson gson = new Gson();
+      List<AIResultVO> result = gson.fromJson(JSONObject.toJSONString(taggingImageResponse.getBody().getData().tags), new TypeToken<ArrayList<AIResultVO>>(){}.getType());
+
+      return result;
+    }catch (TeaException teaException){
+      // 获取整体报错信息。
+      System.out.println(com.aliyun.teautil.Common.toJSONString(teaException));
+      // 获取单个字段。
+      System.out.println(teaException.getCode());
+
+      return null;
+    }
   }
 
   private List<String> getImageKeys(List<String> imageUrLs) {

@@ -1,6 +1,5 @@
 package com.picture.service.Impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -14,9 +13,7 @@ import com.picture.domain.VO.AIResultVO;
 import com.picture.domain.VO.AllTimeTypeVO;
 import com.picture.domain.VO.ImageVO;
 import com.picture.service.ImageService;
-import com.picture.utils.FileServerUtil;
-import org.apache.tomcat.Jar;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.picture.utils.AliyunOssUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +32,8 @@ public class ImageServiceImpl implements ImageService {
     private UserMapper userMapper;
     @Resource
     private RecycleMapper recycleMapper;
-    @Autowired
-    private FileServerUtil fileServerUtil;
+    @Resource
+    private AliyunOssUtil aliyunOssUtil;
 
     @Override
     @Transactional(rollbackFor = Exception.class)   // 事务控制
@@ -49,7 +46,7 @@ public class ImageServiceImpl implements ImageService {
         imageMapper.addImages(imageList);
 
         // 图片id集合
-        List<Integer> imageIds = new ArrayList<Integer>();
+        List<Integer> imageIds = new ArrayList<>();
         for (Image image : imageList) {
             imageIds.add(image.getImageId());
         }
@@ -92,7 +89,7 @@ public class ImageServiceImpl implements ImageService {
         int imageNum = 0;   // 图片序号
         for (Image image : imageList) {
             // 调用AI接口，获取标签结果
-            List<AIResultVO> allResults = fileServerUtil.imageLabel(fileServerUtil.ServPathToAP(image.getCompressUrL()));
+            List<AIResultVO> allResults = aliyunOssUtil.imageLabel(image.getCompressUrL());
             if(allResults == null || allResults.size() == 0) {
                 continue;
             }

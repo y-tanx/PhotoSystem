@@ -12,6 +12,7 @@ import com.aliyun.teautil.models.RuntimeOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.picture.domain.VO.AIResultVO;
+import java.net.URL;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
@@ -230,11 +231,11 @@ public class FileServerUtil {
      * 使用阿里云图像识别功能，为图像打标
      * 参考: https://help.aliyun.com/zh/viapi/use-cases/general-image-marking-1?spm=a2c4g.11186623.0.0.621b5304H8OqzS
      *
-     * @param imagePath 图片的本地文件路径
+     * @param imageUrL 图片的本地文件路径
      * @return 打标结果，包括标签和可信度
      * @throws Exception
      */
-    public List<AIResultVO> imageLabel(String imagePath) throws Exception {
+    public List<AIResultVO> imageLabel(String imageUrL) throws Exception {
         /*
           初始化配置对象com.aliyun.teaopenapi.models.Config
           Config对象存放 AccessKeyId、AccessKeySecret、endpoint等配置
@@ -248,8 +249,9 @@ public class FileServerUtil {
         // 创建Client
         Client client = new Client(config);
 
-        // 使用本地文件
-        InputStream inputStream = new FileInputStream(new File(imagePath));
+        // 使用网络URL
+        URL url = new URL(imageUrL);
+        InputStream inputStream = url.openConnection().getInputStream();
         TaggingImageAdvanceRequest taggingImageAdvanceRequest = new TaggingImageAdvanceRequest()
                 .setImageURLObject(inputStream);
         RuntimeOptions runtime = new RuntimeOptions();
@@ -257,7 +259,6 @@ public class FileServerUtil {
         try {
             // 获得json格式的识别结果
             TaggingImageResponse taggingImageResponse = client.taggingImageAdvance(taggingImageAdvanceRequest, runtime);
-//            System.out.println(com.aliyun.teautil.Common.toJSONString(TeaModel.buildMap(taggingImageResponse)));
 
             // 将json转换为实体对象
             Gson gson = new Gson();

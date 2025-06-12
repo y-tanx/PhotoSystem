@@ -10,7 +10,6 @@ import com.picture.domain.VO.ImageVO;
 import com.picture.service.ImageService;
 import com.picture.utils.AliyunOssUtil;
 import com.picture.utils.EXIFUtil;
-import com.picture.utils.FileServerUtil;
 import com.picture.utils.TokenUtil;
 import java.io.InputStream;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 响应前段有关 图片管理 的请求
+ * 响应前端有关 图片管理 的请求
  */
 @RestController     // 标识该类是一个控制器，用于处理前端发来的请求，并返回响应数据
 @RequestMapping("/image")   // 前端统一的请求前缀为/image
@@ -35,8 +34,6 @@ public class ImageController {
 
     @Resource
     private TokenUtil tokenUtil;
-    @Resource
-    private FileServerUtil fileServerUtil;
     @Resource
     private EXIFUtil exifUtil;
     @Resource
@@ -150,19 +147,23 @@ public class ImageController {
             long imageSize = file.getSize();
 
             // 提取图片的拍摄时间/最后修改时间
+            // 不能在upload之后执行，因为upload时会将file的流用完
             InputStream inputStream = file.getInputStream();
-            Date imageDate = exifUtil.getImageDate(inputStream);    // 根据图片路径，获得图片的拍摄时间/最后修改时间
-            if(imageDate == null)
-            {
+            Date imageDate = exifUtil.getImageDate(inputStream);
+            inputStream.close();
+            if (imageDate == null) {
                 imageDate = new Date();
             }
 
-            // 将图片文件保存到userName目录下，返回图片文件在Web上的路径
-            String imageUrL = fileServerUtil.uploadServe("img", userName, file);
-            String imagePath = fileServerUtil.ServPathToAP(imageUrL);   // 这是本地存储路径
+            // 将图片文件保存到OSS中，返回图片文件在OSS上的路径
+            InputStream inputStream1 = file.getInputStream();
+            String imageUrL = aliyunOssUtil.uploadOriginImage(userName, imageName, inputStream1, CannedAccessControlList.PublicRead, null);
+            inputStream1.close();
 
-            // 压缩图片，返回压缩后图片的路径
-            String compressUrL = fileServerUtil.CompressImage(imagePath, userName, (float) imageSize);
+            // 图片压缩，用于缩略图展示
+            InputStream inputStream2 = file.getInputStream();
+            String compressUrL = aliyunOssUtil.uploadCompressImage(userName, imageName, (float)imageSize, inputStream2, CannedAccessControlList.PublicRead, null);
+            inputStream2.close();
 
             // 创建Image对象，并加入到列表中
             imageList.add(new Image(null, imageName, imageSize, imgSite, imgDesc, imageUrL, compressUrL, imageDate));
@@ -176,10 +177,12 @@ public class ImageController {
 
         // 上传失败，清除之前的文件
         if(data == null || data.size() == 0) {
+            // 上传失败，清除之前上传的文件
+            List<String> imageUrls = new ArrayList<>();
             for(Image image : imageList) {
-                String imageUrL = image.getImageUrL();
-                fileServerUtil.deleteServe(imageUrL);
+                imageUrls.add(image.getImageUrL());
             }
+            aliyunOssUtil.deleteImages(imageUrls);
             json.put("status", "fail");
             return json;
         }
