@@ -81,7 +81,7 @@
         <div class="image-wrapper">
           <!-- el-image 预览不变 -->
           <el-image
-              :src="serveUrL + item.compressUrL"
+              :src="item.compressUrL"
               :preview-src-list="getSrcList(index)"
               class="image"
               fit="cover"
@@ -117,7 +117,7 @@
     >
       <div v-if="selectedImage">
         <img
-            :src="serveUrL + selectedImage.compressUrL"
+            :src="selectedImage.compressUrL"
             alt="图片"
             style="width: 100%; margin-bottom: 10px;"
         />
@@ -446,9 +446,6 @@ export default {
         if (resp.data.status == "success") {
           _this.images = resp.data.data.images;
           _this.previewImageUrL = resp.data.data.previewImageUrL;
-          for (var i = 0; i < _this.previewImageUrL.length; i++) {
-            _this.previewImageUrL[i] = _this.serveUrL + _this.previewImageUrL[i]
-          }
           _this.totalCount = resp.data.data.totalCount;
           _this.isRouterAlive = !_this.isRouterAlive;
 

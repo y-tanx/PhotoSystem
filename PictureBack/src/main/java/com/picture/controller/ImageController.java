@@ -2,12 +2,13 @@ package com.picture.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.picture.dao.ImageMapper;
+import com.aliyun.oss.model.CannedAccessControlList;
 import com.picture.domain.Image;
 import com.picture.domain.User;
 import com.picture.domain.VO.AllTimeTypeVO;
 import com.picture.domain.VO.ImageVO;
 import com.picture.service.ImageService;
+import com.picture.utils.AliyunOssUtil;
 import com.picture.utils.EXIFUtil;
 import com.picture.utils.FileServerUtil;
 import com.picture.utils.TokenUtil;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,6 +41,8 @@ public class ImageController {
     private EXIFUtil exifUtil;
     @Resource
     private ImageService imageService;
+    @Resource
+    private AliyunOssUtil aliyunOssUtil;
 
     /**
      * 上传图片，同一批上传的图片的拍摄地点,类型和注释相同
@@ -56,7 +58,8 @@ public class ImageController {
      * @throws IOException
      */
     @RequestMapping("/upload")
-    public JSONObject upload(String albumName, Integer albumId, String imgSite, String imgType, String imgDesc, String token, @RequestParam("file")MultipartFile[] multipartFiles) throws IOException {
+    public JSONObject upload(String albumName, Integer albumId, String imgSite, String imgType, String imgDesc, String token, @RequestParam("file")MultipartFile[] multipartFiles)
+        throws Exception {
         JSONObject json = new JSONObject();
 
         // 通过token解析出用户信息
@@ -90,13 +93,15 @@ public class ImageController {
                 imageDate = new Date();
             }
 
-            // 将图片文件保存到userName目录下，返回图片文件在Web上的路径
-            String imageUrL = fileServerUtil.uploadServe("img", userName, file);
-            String imagePath = fileServerUtil.ServPathToAP(imageUrL);   // 这是本地存储路径
+            // 将图片文件保存到OSS中，返回图片文件在OSS上的路径
+            InputStream inputStream1 = file.getInputStream();
+            String imageUrL = aliyunOssUtil.uploadOriginImage(userName, imageName, inputStream1, CannedAccessControlList.PublicRead, null);
+            inputStream1.close();
 
-            // 压缩图片，返回压缩后图片的路径
-            String compressUrL = fileServerUtil.CompressImage(imagePath, userName, (float) imageSize);
-            System.out.println(compressUrL);
+            // 图片压缩，用于缩略图展示
+            InputStream inputStream2 = file.getInputStream();
+            String compressUrL = aliyunOssUtil.uploadCompressImage(userName, imageName, (float)imageSize, inputStream2, CannedAccessControlList.PublicRead, null);
+            inputStream2.close();
 
             // 创建Image对象，并加入到列表中
             imageList.add(new Image(null, imageName, imageSize, imgSite, imgDesc, imageUrL, compressUrL, imageDate));
@@ -109,10 +114,11 @@ public class ImageController {
             json.put("status", "success");
         } else {
             // 上传失败，清除之前上传的文件
-            for (Image image : imageList) {
-                String imageUrL = image.getImageUrL();
-                fileServerUtil.deleteServe(imageUrL);
+            List<String> imageUrls = new ArrayList<>();
+            for(Image image : imageList) {
+                imageUrls.add(image.getImageUrL());
             }
+            aliyunOssUtil.deleteImages(imageUrls);
             json.put("status", "fail");
         }
 
