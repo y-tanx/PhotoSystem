@@ -33,6 +33,8 @@ public interface ImageMapper {
      */
     void addImageTypes(Integer imageId, List<AIResultVO> imageTypes);
 
+    int updateImage(Integer imageId, String imageSite, String imageDesc);
+
     /**
      * 根据用户Id，查询用户所有图片的时间信息
      *

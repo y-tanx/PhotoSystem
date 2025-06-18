@@ -98,7 +98,6 @@
       </div>
     </div>
 
-    <!-- 弹窗 -->
     <el-dialog
         :visible.sync="showDialog"
         width="400px"
@@ -111,8 +110,26 @@
             alt="图片"
             style="width: 100%; margin-bottom: 10px;"
         />
-        <p><strong>拍摄地址：</strong> {{ selectedImage.imageSite || '无' }}</p>
-        <p><strong>图片注释：</strong> {{ selectedImage.imageDesc || '无' }}</p>
+
+        <!-- 拍摄地址：改为可编辑 -->
+        <el-form label-width="80px" size="small">
+          <el-form-item label="拍摄地址">
+            <el-input v-model="selectedImage.imageSite" placeholder="请输入拍摄地址" />
+          </el-form-item>
+
+          <el-form-item label="图片注释">
+            <el-input
+                type="textarea"
+                v-model="selectedImage.imageDesc"
+                placeholder="请输入图片注释"
+            />
+          </el-form-item>
+        </el-form>
+
+        <!-- 保存按钮 -->
+        <div style="text-align: right; margin-top: 10px;">
+          <el-button type="primary" size="small" @click="saveImageInfo">保存修改</el-button>
+        </div>
       </div>
     </el-dialog>
 
@@ -225,12 +242,46 @@ export default {
   },
   methods: {
     openDialog(item) {
-      this.selectedImage = item;
+      this.selectedImage = { ...item };  // 复制一份避免直接影响原数据
       this.showDialog = true;
     },
     closeDialog() {
       this.showDialog = false;
       this.selectedImage = null;
+    },
+    saveImageInfo() {
+      var _this = this;
+      const formData = new FormData();
+      formData.append("token", this.token);
+      formData.append("imageId", this.selectedImage.imageId);
+      formData.append("imageSite", this.selectedImage.imageSite);
+      formData.append("imageDesc", this.selectedImage.imageDesc);
+
+      this.axios({
+        url: this.$serveUrL + "/image/update",
+        method: "post",
+        data: formData
+      }).then(function (resp) {
+        if (resp.data.status === "success") {
+          _this.$message({
+            message: '图片信息更新成功！',
+            type: 'success'
+          });
+          _this.showDialog = false;
+          _this.loadImages(); // 重新加载图片
+        } else {
+          _this.$message({
+            message: '图片信息保存失败！',
+            type: 'error'
+          });
+        }
+      }).catch(function (error) {
+        console.error("保存出错", error);
+        _this.$message({
+          message: '请求出错',
+          type: 'error'
+        });
+      });
     },
 
     // 添加到相册表格方法
@@ -244,6 +295,14 @@ export default {
     openAlbum() {
       this.selectAlbums();
       this.dialogTableVisible = true;
+    },
+    loadImages() {
+      if (this.arrPath && this.arrPath.length > 0) {
+        this.handleSelect('', this.arrPath);
+      } else {
+        // 如果路径为空，默认加载全部图片
+        this.selectAllImage('', '');
+      }
     },
     addAlbum() {
       this.handleCheckIndexToId();

@@ -23,6 +23,16 @@ public interface ImageService {
     boolean uploadImage(List<Image> imageList, Integer userId, Integer albumId, String albumName, String imageType);
 
     /**
+     * 修改图片的拍摄地点和注释信息
+     *
+     * @param imageId
+     * @param imageSite
+     * @param imageDesc
+     * @return
+     */
+    boolean updateImage(Integer imageId, String imageSite, String imageDesc);
+
+    /**
      * 获得用户所有图片的时间和类别信息
      *
      * @param userId 用户Id

@@ -193,6 +193,28 @@ public class ImageController {
         return imageList;
     }
 
+    @RequestMapping("/update")
+    public JSONObject updateImageInfo(String token, Integer imageId, String imageSite, String imageDesc) {
+        JSONObject json = new JSONObject();
+
+        // 解析用户信息
+        User user = tokenUtil.jwtParser(token);
+        if(user == null) {
+            json.put("status", "user fault");
+            return json;
+        }
+
+        // 调用Service修改图片的拍摄地点和注释信息
+        boolean result = imageService.updateImage(imageId, imageSite, imageDesc);
+        if(result) {
+            json.put("status", "success");
+        }else {
+            json.put("status", "fail");
+        }
+
+        return json;
+    }
+
     /**
      * 查询当前用户的所有图片的时间和类型信息
      *

@@ -41,6 +41,13 @@
             (null, #{imageId}, #{item.value})
         </foreach>
     </insert>
+
+    <update id="updateImage">
+        UPDATE image
+            SET imageSite = #{imageSite},
+                imageDesc = #{imageDesc}
+        WHERE id = #{imageId}
+    </update>
     
     <select id="selectAllImageTime" resultType="Date" parameterType="Integer">
         SELECT DISTINCT imageDate

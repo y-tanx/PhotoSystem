@@ -152,6 +152,19 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public boolean updateImage(Integer imageId, String imageSite, String imageDesc) {
+        if(imageId == null || imageSite == null || imageDesc == null) {
+            return false;
+        }
+        // 调用DAO层，修改image表中对应的信息
+        int rows = imageMapper.updateImage(imageId, imageSite, imageDesc);
+        if(rows > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public AllTimeTypeVO selectTimeType(Integer userId) {
         // 查询用户图片的所有日期
         List<Date> dates = imageMapper.selectAllImageTime(userId);
