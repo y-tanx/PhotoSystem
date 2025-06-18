@@ -7,6 +7,7 @@ import com.picture.domain.Image;
 import com.picture.domain.User;
 import com.picture.domain.VO.AllTimeTypeVO;
 import com.picture.domain.VO.ImageVO;
+import com.picture.service.AlbumService;
 import com.picture.service.ImageService;
 import com.picture.utils.AliyunOssUtil;
 import com.picture.utils.EXIFUtil;
@@ -40,6 +41,8 @@ public class ImageController {
     private ImageService imageService;
     @Resource
     private AliyunOssUtil aliyunOssUtil;
+    @Resource
+    private AlbumService albumService;
 
     /**
      * 上传图片，同一批上传的图片的拍摄地点、类型和注释相同

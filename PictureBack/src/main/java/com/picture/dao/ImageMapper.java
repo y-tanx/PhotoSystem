@@ -121,6 +121,4 @@ public interface ImageMapper {
      * @return
      */
     List<Image> selectImageByIds(List<Integer> imageIds);
-
-
 }

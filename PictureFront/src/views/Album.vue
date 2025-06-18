@@ -48,8 +48,15 @@
                                 <el-checkbox :label="index">
                                 </el-checkbox>
                             </el-checkbox-group>
-                            <img class="album-el-img" :src=" item.albumImg" @click="openAblum(index)"
-                                style="object-fit:cover">
+<!--                            <img class="album-el-img" :src=" item.albumImg" @click="openAblum(index)"-->
+<!--                                style="object-fit:cover">-->
+                          <img
+                              class="album-el-img"
+                              :src="item.albumImg"
+                              @click="openAblum(index)"
+                              @error="handleImgError($event, index)"
+                              style="object-fit:cover"
+                          />
                             <div class="album-el-txt">
                                 <span>{{ item.albumName }}</span>
                                 <div>图片数量:<a> {{ item.imageNumber }}张</a>
@@ -127,6 +134,10 @@ export default {
         };
     },
     methods: {
+      handleImgError(event, index) {
+        // 设置默认图片地址
+        this.albumData[index].albumImg = 'https://myc-picture.oss-cn-beijing.aliyuncs.com/image/avatar/albumImage.png';
+      },
         //打开相册
         openAblum(id) {
             let name = this.albumData[id].albumName;
