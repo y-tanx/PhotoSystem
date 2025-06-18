@@ -37,7 +37,7 @@
       <h1>存储信息</h1>
       <div class="smid-content-1">
         <a-statistic title="总照片数：" :value="imgInfo.imageSumNumber" suffix="张" />
-        <a-statistic title="现占用内存:" :precision="2" :value="imgInfo.imageSumSize" suffix="Mb" />
+        <a-statistic title="现占用空间:" :precision="2" :value="imgInfo.imageSumSize" suffix="Mb" />
       </div>
     </div>
 
