@@ -26,7 +26,7 @@ public class SendEmailUtil {
         //邮件标题
         message.setSubject("PictureSystem账号验证码：");
         //邮件验证码
-        message.setText("【Picture】验证码：num，用于账号验证码登录，5分钟内有效。验证码提供给他人可能导致帐号被盗，请勿泄露，谨防被骗。");
+        message.setText("【Picture】验证码：" + num + "，用于账号验证码登录，5分钟内有效。验证码提供给他人可能导致帐号被盗，请勿泄露，谨防被骗。");
         javaMailSender.send(message);
         return String.valueOf(num);
     }
