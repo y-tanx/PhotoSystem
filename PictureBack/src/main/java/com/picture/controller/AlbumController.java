@@ -87,6 +87,7 @@ public class AlbumController {
             return jsonObject;
         }
         albumService.removeImageFromAlbum(req,albumId,imageId,user.getUserId());
+        System.err.println("here");
         jsonObject.put("status","success");
         return jsonObject;
     }

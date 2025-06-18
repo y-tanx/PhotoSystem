@@ -110,13 +110,42 @@
       </div>
     </div>
 
+<!--    &lt;!&ndash; 弹窗 &ndash;&gt;-->
+<!--    <el-dialog :visible.sync="showDialog" width="400px" :before-close="closeDialog">-->
+<!--      <div v-if="selectedImage">-->
+<!--        <img :src="selectedImage.compressUrL" alt="图片" style="width: 100%; margin-bottom: 10px;" />-->
+<!--        <p><strong>拍摄地址：</strong> {{ selectedImage.imageSite }}</p>-->
+<!--        <p><strong>图片注释：</strong> {{ selectedImage.imageDesc }}</p>-->
+<!--      </div>-->
+<!--    </el-dialog>-->
     <!-- 弹窗 -->
-    <el-dialog :visible.sync="showDialog" width="400px" :before-close="closeDialog">
+    <el-dialog
+        :visible.sync="showDialog"
+        width="400px"
+        :before-close="closeDialog"
+        title="编辑图片信息"
+    >
       <div v-if="selectedImage">
-        <img :src="selectedImage.compressUrL" alt="图片" style="width: 100%; margin-bottom: 10px;" />
-        <p><strong>拍摄地址：</strong> {{ selectedImage.imageSite }}</p>
-        <p><strong>图片注释：</strong> {{ selectedImage.imageDesc }}</p>
+        <img
+            :src="selectedImage.compressUrL"
+            alt="图片"
+            style="width: 100%; margin-bottom: 10px;"
+        />
+
+        <el-form :model="selectedImage" label-width="80px">
+          <el-form-item label="拍摄地址">
+            <el-input v-model="selectedImage.imageSite" placeholder="请输入拍摄地址" />
+          </el-form-item>
+          <el-form-item label="图片注释">
+            <el-input v-model="selectedImage.imageDesc" placeholder="请输入图片注释" />
+          </el-form-item>
+        </el-form>
       </div>
+
+      <template #footer>
+        <el-button @click="closeDialog">取 消</el-button>
+        <el-button type="primary" @click="saveImageInfo">保 存</el-button>
+      </template>
     </el-dialog>
 
     <div :style="empty2">
@@ -221,11 +250,47 @@ export default {
       this.selectedImage = image;
       this.showDialog = true;
     },
+
     closeDialog(done) {
       this.showDialog = false;
       this.selectedImage = null;
       done();
     },
+
+    saveImageInfo() {
+      var _this = this;
+      const formData = new FormData();
+      formData.append("token", this.token);
+      formData.append("imageId", this.selectedImage.imageId);
+      formData.append("imageSite", this.selectedImage.imageSite);
+      formData.append("imageDesc", this.selectedImage.imageDesc);
+
+      this.axios({
+        url: this.$serveUrL + "/image/update",
+        method: "post",
+        data: formData
+      }).then(function (resp) {
+        if (resp.data.status === "success") {
+          _this.$message({
+            message: '图片信息更新成功！',
+            type: 'success'
+          });
+          _this.showDialog = false;
+        } else {
+          _this.$message({
+            message: '图片信息保存失败！',
+            type: 'error'
+          });
+        }
+      }).catch(function (error) {
+        console.error("保存出错", error);
+        _this.$message({
+          message: '请求出错',
+          type: 'error'
+        });
+      });
+    },
+
     selectAllImage() {
       var _this = this;
       const formData = new FormData();

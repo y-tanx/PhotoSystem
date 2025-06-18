@@ -126,8 +126,9 @@
           </el-form-item>
         </el-form>
 
-        <!-- 保存按钮 -->
+        <!-- 按钮区域 -->
         <div style="text-align: right; margin-top: 10px;">
+          <el-button size="small" @click="closeDialog">取 消</el-button>
           <el-button type="primary" size="small" @click="saveImageInfo">保存修改</el-button>
         </div>
       </div>
