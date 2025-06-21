@@ -48,8 +48,6 @@ pagehelper:
   params: count=countSql
 
 aliyun:
-  accessKeyId: LTAI5tKHDnSJYMyiyMqemu5t
-  accessKeySecret: Tf6AYAP2u2aifJNR8Sl6mkPnZGoNUk
   endPoint: oss-cn-beijing.aliyuncs.com
   bucket: myc-picture
   imgPath: image/
